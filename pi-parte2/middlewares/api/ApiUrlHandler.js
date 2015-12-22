@@ -30,18 +30,28 @@ function urlParser(req, res, next) {
     let url = req.url;
     let option = "";
     let arr = url.split('/');
-    for (let i = 0; i < arr.length; ++i) {
+    let returnCicle = false;
+    for (let i = arr.length-1; i > 0; --i) {
         if (arr[i].length > 1) {
             for (let prop in map) {
                 if (prop == arr[i]) {
                     option = map[prop];
+                    returnCicle = true;
                     break;
                 }
             }
         }
+        if (returnCicle) {
+            break;
+        }
     }
 
     req.models = req.models || {};
+    if (req.params.idL != undefined) {
+        option = option.replace("{idL}", req.params.idL);
+    } else if (req.params.idT != undefined) {
+        option = option.replace("{idT}", req.params.idT);
+    }
     req.models.urlReq = BASE_URL.concat(option);
     return next();
 };

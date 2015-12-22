@@ -1,3 +1,4 @@
+
 <div class="container">
 
     <div class="jumbotron">
@@ -10,11 +11,9 @@
 
 {{#each leagues}}
         <div class="col-lg-6">
-            <h3><b><i>League</i></b>: <a href="/">{{caption}}</a></h3>
+            <h3><b><i>League</i></b>: <a href="/football-data/leagues/{{id}}/teams">{{caption}}</a></h3>
             <p><b>Season</b>: {{year}}</p>
             <p><b>Teams</b>: {{numberOfTeams}}</p>
-            <p><b>Games</b>: {{numberOfGames}}</p>
-
         </div>
 {{/each}}
 

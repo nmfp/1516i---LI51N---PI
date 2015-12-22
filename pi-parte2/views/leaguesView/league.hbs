@@ -1,0 +1,29 @@
+
+<!-- Main jumbotron for a primary marketing message or call to action -->
+<div class="jumbotron">
+    <div class="container">
+        <h1>{{league.caption}}</h1>
+        <p><b>Year</b>: {{league.year}}</p>
+        <p>Total games: {{league.numberOfGames}}</p>
+        <p>Total teams: {{league.numberOfTeams}}</p>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        {{#each teams}}
+        <div class="col-md-4" style="padding-bottom:20px; padding-top:10px">
+            <h2 style="text-align: center"><a href="/football-data/leagues/{{league.id}}/teams/{{id}}/players">{{name}}</a></h2>
+            <p style="text-align: center">Short name: {{code}}</p>
+            <p style="text-align: center">Value: {{squadMarketValue}}</p>
+            <img src="{{crestUrl}}" width="100" height="100" style="display: block; margin-left: auto; margin-right: auto;"/>
+        </div>
+        {{/each}}
+    </div>
+
+    <hr>
+
+    <footer class="footer">
+        <p>&copy; 2015/16 PI, G8.</p>
+    </footer>
+</div> <!-- /container -->
