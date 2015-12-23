@@ -1,7 +1,7 @@
 'use strict';
 
 /*
- http://api.football-data.org/v1/soccerseasons/
+ http://api.football-data.org/v1/soccerseasons
  http://api.football-data.org/v1/soccerseasons/394/teams
  http://api.football-data.org/v1/teams/5/players
  http://api.football-data.org/v1/soccerseasons/394/fixtures
@@ -49,7 +49,8 @@ function urlParser(req, res, next) {
     req.models = req.models || {};
     if (req.params.idL != undefined) {
         option = option.replace("{idL}", req.params.idL);
-    } else if (req.params.idT != undefined) {
+    }
+    if (req.params.idT != undefined) {
         option = option.replace("{idT}", req.params.idT);
     }
     req.models.urlReq = BASE_URL.concat(option);

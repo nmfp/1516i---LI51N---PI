@@ -2,6 +2,7 @@
 
 const leagueObj = require('../../models/templates/leagueObj.json');
 const teamObj = require('../../models/templates/teamObj.json');
+const playerObj = require('../../models/templates/playerObj.json');
 //TODO create all other templates and refactor the name
 
 //TODO a mapper for each api request
@@ -54,7 +55,31 @@ function mapperTeams(req, res, next) {
     return next();
 };
 
+function mapperPlayers(req, res, next) {
+    req.models = req.models || {};
+    let arr = req.models.resapi[0]["players"];
+
+    let players = [];
+    for (let i = 0; i < arr.length; ++i) {
+        let player = {};
+        let obj = arr[i];
+        for (let prop in playerObj) {
+            /*if (prop == "_links") {
+                let idParser = obj[prop]["self"]["href"];
+                let id = idParser.substring(idParser.lastIndexOf('/')+1, idParser.length).trim(); //394
+                team["id"] = id;
+            }*/
+            player[prop] = obj[prop];
+        }
+        players.push(player);
+    }
+
+    req.models.players = players;
+    return next();
+};
+
 module.exports = {
     mapperLeagues: mapperLeagues,
-    mapperTeams: mapperTeams
+    mapperTeams: mapperTeams,
+    mapperPlayers: mapperPlayers
 };
