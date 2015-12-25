@@ -21,10 +21,8 @@ const map = {
     "teams": "soccerseasons/{idL}/teams",
     "players": "teams/{idT}/players",
     "fixtures": "soccerseasons/{idL}/fixtures",
-    "leagueTable": "soccerseasons/{idL}/leagueTable"
+    "leagueTables": "soccerseasons/{idL}/leagueTable"
 };
-
-//TODO maybe final look
 
 function urlParser(req, res, next) {
     let url = req.url;

@@ -1,0 +1,19 @@
+
+{
+  "_links": {
+    "team": {
+      "href": ""
+    }
+  },
+  "position": "",
+  "teamName": "",
+  "crestURI": "",
+  "playedGames": "",
+  "points": "",
+  "goals": "",
+  "goalsAgainst": "",
+  "goalDifference": "",
+  "wins": "",
+  "draws": "",
+  "losses": ""
+}

@@ -1,0 +1,20 @@
+
+{
+  "_links": {
+    "homeTeam": {
+      "href": ""
+    },
+    "awayTeam": {
+      "href": ""
+    }
+  },
+  "date":"",
+  "status": "",
+  "matchday":"",
+  "homeTeamName":"",
+  "awayTeamName":"",
+  "result":{
+    "goalsHomeTeam":"",
+    "goalsAwayTeam":""
+  }
+}
