@@ -4,7 +4,6 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
-
 const hbs = require('express-handlebars');
 
 const app = express();
@@ -20,10 +19,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 //register the controllers
 const leagueController = require('./controllers/leaguesController');
-const usersController = require('./controllers/userController');
+const favoritesController = require('./controllers/favoritesController');
 
 app.use('/football-data', leagueController);
-app.use('/users', usersController);
+app.use('/favorites', favoritesController);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

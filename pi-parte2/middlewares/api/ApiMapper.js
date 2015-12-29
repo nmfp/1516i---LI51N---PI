@@ -61,11 +61,6 @@ function mapperPlayers(req, res, next) {
         let player = {};
         let obj = arr[i];
         for (let prop in playerObj) {
-            /*if (prop == "_links") {
-                let idParser = obj[prop]["self"]["href"];
-                let id = idParser.substring(idParser.lastIndexOf('/')+1, idParser.length).trim(); //394
-                team["id"] = id;
-            }*/
             player[prop] = obj[prop];
         }
         players.push(player);

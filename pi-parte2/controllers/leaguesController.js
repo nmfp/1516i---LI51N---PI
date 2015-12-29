@@ -2,13 +2,32 @@
 
 const express = require('express');
 const router = express.Router();
-
+const couchdb = require('node-couchdb');
 const reqAPI = require('../middlewares/api/ApiRequest');
 const reqParser = require('../middlewares/api/ApiUrlHandler');
 const reqMapper = require('../middlewares/api/ApiMapper');
-
+var couch = new couchdb("localhost", 5984);
 let leagues = [];
 let teams = [];
+const request = require('request')
+
+
+/*
+request(
+    {uri: 'http://localhost:5984/footballdata', method:'PUT'},
+    function (err, response, body) {
+          if (err)
+                throw err;
+          if (response.statusCode !== 201)
+                throw new Error("Could not create database. " + body);
+    }
+)
+*/
+
+
+
+
+
 
 //localhost:3000/football-data/leagues
 router.get('/leagues', reqParser.urlParser, reqAPI.requestAPI, reqMapper.mapperLeagues,
@@ -50,6 +69,21 @@ function(req, res) {
       }
       res.render('leaguesView/players', { title: 'Players info', team: team, players: req.models.players });
 });
+
+
+router.get('/leagues/:idL/teams/:idT/teamFixtures', reqParser.urlParser, reqAPI.requestAPI, reqMapper.mapperFixtures,
+    function(req, res) {
+          req.models = req.models || {};
+          let id = req.params.idT;
+          let team = {};
+          for (let i = 0; i < teams.length; ++i) {
+                if(teams[i]["id"] == id) {
+                      team = teams[i];
+                      break;
+                }
+          }
+          res.render('leaguesView/fixtures', { title: 'Team fixtures', team: team, fixtures: req.models.fixtures });
+    });
 
 router.get('/leagues/:idL/fixtures', reqParser.urlParser, reqAPI.requestAPI, reqMapper.mapperFixtures,
 function(req, res) {
