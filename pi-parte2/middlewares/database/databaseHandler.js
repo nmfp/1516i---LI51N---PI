@@ -1,9 +1,13 @@
 const couchdb = require('node-couchdb');
+const request = require('request');
 
-const memcacheClient = require("memcache").Client(11211, "localhost");
-memcacheClient.on("connect", function () {
-    memcacheClient.invalidate = function () {};
-    let couch = new nodeCouchDB("localhost", 5984, memcacheClient);
-});
+ exports.all = function (db,options,done){
 
-memcacheClient.connect();
+     request({
+         url: "http://localhost:5984/footballdata",
+         json:true,
+     }, function(err, resp, body) {
+         console.log(body);
+         if (err) return new Error(err);
+     })
+ }

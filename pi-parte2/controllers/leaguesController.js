@@ -11,7 +11,6 @@ let leagues = [];
 let teams = [];
 const request = require('request')
 
-
 /*
 request(
     {uri: 'http://localhost:5984/footballdata', method:'PUT'},
@@ -22,13 +21,8 @@ request(
                 throw new Error("Could not create database. " + body);
     }
 )
+
 */
-
-
-
-
-
-
 //localhost:3000/football-data/leagues
 router.get('/leagues', reqParser.urlParser, reqAPI.requestAPI, reqMapper.mapperLeagues,
 function(req, res) {

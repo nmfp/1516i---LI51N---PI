@@ -11,6 +11,9 @@
 
         <title>Football-data</title>
 
+
+
+
         <!-- Bootstrap core CSS -->
         <link href="/css/bootstrap.min.css" rel="stylesheet">
 
@@ -32,8 +35,12 @@
     </head>
 
     <body>
-
         <nav class="navbar navbar-inverse navbar-fixed-top">
+
+            <form action = "/favorites/all" method="get">
+                <button type = "submit" class = "btn btn-primary">Add team to your favorites</button>
+            </form>
+
             <div class="container">
                 <div class="navbar-header">
                     <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
