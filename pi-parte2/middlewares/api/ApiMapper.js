@@ -148,6 +148,26 @@ function mapperLeagueTables(req, res, next) {
     return next();
 };
 
+
+//DATABASE MAPPER
+
+function mapperFavTeams(req,res,next){
+    req.models = req.models || {};
+    let arr = req.models.finalFavTeams;
+
+    let teams = [];
+    for (let i = 0; i < arr.length; ++i) {
+        let team = {};
+        let obj = arr[i];
+        for (let prop in teamObj) {
+            team[prop] = obj[prop];
+        }
+        teams.push(team);
+    }
+
+    req.models.teams = teams;
+    return next();
+}
 module.exports = {
     mapperLeagues: mapperLeagues,
     mapperTeams: mapperTeams,
