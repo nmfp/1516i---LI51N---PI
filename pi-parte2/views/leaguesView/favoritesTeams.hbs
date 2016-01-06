@@ -2,7 +2,6 @@
 <!-- Main jumbotron for a primary marketing message or call to action -->
 <div class="jumbotron">
     <div class="container">
-        <h3></h3>
         <h1>Favorites Teams</h1>
     </div>
 </div>
@@ -11,7 +10,7 @@
     <div class="row">
         {{#each teams}}
             <div class="col-md-4" style="padding-bottom:20px; padding-top:10px; text-align: center">
-                <h2><a href="/football-data/leagues/{{idL}}/teams/{{id}}/players">{{name}}</a></h2>
+                <h2><a href="/football-data/leagues/{{idL}}/teams/{{idT}}/players">{{name}}</a></h2>
                 <p>Short name: {{code}}</p>
                 <p>Value: {{squadMarketValue}}</p>
                 <img src="{{crestUrl}}" width="100" height="100" style="display: block; margin-left: auto; margin-right: auto;"/>

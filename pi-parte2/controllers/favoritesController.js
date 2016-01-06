@@ -1,15 +1,12 @@
 
 'use strict';
-const reqAPI = require('../middlewares/api/ApiRequest');
-const reqMapper = require('../middlewares/api/ApiMapper');
-const reqParser = require('../middlewares/api/ApiUrlHandler');
 
 const express = require('express');
 const router = express.Router();
 const couchdb = require('node-couchdb');
 const request = require("request");
 const db = require("../middlewares/database/databaseHandler")
-let teams = []
+
 /* GET users listing. */
 router.post('/insertTeam', function(req, res, next) {
 
@@ -30,18 +27,15 @@ router.post('/insertTeam', function(req, res, next) {
   //res.send('respond with a resource');
 });
 
-router.get('/all', reqAPI.requestDB, reqAPI.requestTeamDB, reqMapper.mapperTeamsFav,
-    function(req, res) {
-        req.models = req.models || {};
-        let teams = req.models.teams;
-        let leagues = req.models.favouritesLeagueTeams;
-        let i=0;
-        for(let j=0;j<leagues.length;j++) {
-            let id = leagues[j];
-            teams[i++]["idL"] = id;
-        }
-        teams = req.models.teams;
-        res.render('leaguesView/favoritesTeams', { title: 'Teams info', leagues:leagues, teams: teams });
-    });
+router.get('/all', function(req, res, next) {
 
+  request({
+    url: "http://localhost:5984/footballdata/_all_docs",
+    json: true,
+  }, function (err, resp, body) {
+    console.log(body.rows);
+    if (err) return new Error(err);
+  });
+  //res.send('respond with a resource');
+})
 module.exports = router;

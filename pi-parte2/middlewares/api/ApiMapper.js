@@ -52,29 +52,6 @@ function mapperTeams(req, res, next) {
     return next();
 };
 
-function mapperTeamsFav(req, res, next) {
-    req.models = req.models || {};
-    let arr = req.models.resapi;
-
-    let teams = [];
-    for (let i = 0; i < arr.length; ++i) {
-        let team = {};
-        let obj = arr[i];
-        for (let prop in teamObj) {
-            if (prop == "_links") {
-                let idParser = obj[prop]["self"]["href"];
-                let id = idParser.substring(idParser.lastIndexOf('/')+1, idParser.length).trim(); //394
-                team["id"] = id;
-            }
-            team[prop] = obj[prop];
-        }
-        teams.push(team);
-    }
-
-    req.models.teams = teams;
-    return next();
-};
-
 function mapperPlayers(req, res, next) {
     req.models = req.models || {};
     let arr = req.models.resapi[0]["players"];
@@ -148,31 +125,10 @@ function mapperLeagueTables(req, res, next) {
     return next();
 };
 
-
-//DATABASE MAPPER
-
-function mapperFavTeams(req,res,next){
-    req.models = req.models || {};
-    let arr = req.models.finalFavTeams;
-
-    let teams = [];
-    for (let i = 0; i < arr.length; ++i) {
-        let team = {};
-        let obj = arr[i];
-        for (let prop in teamObj) {
-            team[prop] = obj[prop];
-        }
-        teams.push(team);
-    }
-
-    req.models.teams = teams;
-    return next();
-}
 module.exports = {
     mapperLeagues: mapperLeagues,
     mapperTeams: mapperTeams,
     mapperPlayers: mapperPlayers,
     mapperFixtures: mapperFixtures,
-    mapperLeagueTables: mapperLeagueTables,
-    mapperTeamsFav:mapperTeamsFav
+    mapperLeagueTables: mapperLeagueTables
 };
