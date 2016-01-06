@@ -37,10 +37,6 @@
     <body>
         <nav class="navbar navbar-inverse navbar-fixed-top">
 
-            <form action = "/favorites/all" method="get">
-                <button type = "submit" class = "btn btn-primary">Add team to your favorites</button>
-            </form>
-
             <div class="container">
                 <div class="navbar-header">
                     <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
@@ -50,9 +46,16 @@
                         <span class="icon-bar"></span>
                     </button>
                     <a class="navbar-brand" href="/football-data/leagues">Football-data</a>
+                    <div class="navbar-form navbar-right">
+                        <form action = "/favorites/all" method="get">
+                            <button type = "submit" class = "btn btn-primary">Add team to your favorites</button>
+                        </form>
+                    </div>
                 </div>
+
                 <div id="navbar" class="navbar-collapse collapse">
                     <form class="navbar-form navbar-right">
+
                         <div class="form-group">
                             <input type="text" placeholder="Email" class="form-control">
                         </div>
