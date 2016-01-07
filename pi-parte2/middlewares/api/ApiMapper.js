@@ -1,3 +1,4 @@
+
 'use strict';
 
 const leagueObj = require('../../models/templates/leagueObj.json');
@@ -15,11 +16,6 @@ function mapperLeagues(req, res, next) {
         let league = {};
         let obj = arr[i];
         for (let prop in leagueObj) {
-            if (prop == "_links") {
-                let idParser = obj[prop]["self"]["href"];
-                let id = idParser.substring(idParser.lastIndexOf('/')+1, idParser.length).trim(); //394
-                league["id"] = id;
-            }
             league[prop] = obj[prop];
         }
         leagues.push(league);

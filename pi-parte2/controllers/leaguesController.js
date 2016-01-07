@@ -1,28 +1,16 @@
+
 'use strict';
 
 const express = require('express');
 const router = express.Router();
-const couchdb = require('node-couchdb');
+
 const reqAPI = require('../middlewares/api/ApiRequest');
 const reqParser = require('../middlewares/api/ApiUrlHandler');
 const reqMapper = require('../middlewares/api/ApiMapper');
-var couch = new couchdb("localhost", 5984);
+
 let leagues = [];
 let teams = [];
-const request = require('request')
 
-/*
-request(
-    {uri: 'http://localhost:5984/footballdata', method:'PUT'},
-    function (err, response, body) {
-          if (err)
-                throw err;
-          if (response.statusCode !== 201)
-                throw new Error("Could not create database. " + body);
-    }
-)
-
-*/
 //localhost:3000/football-data/leagues
 router.get('/leagues', reqParser.urlParser, reqAPI.requestAPI, reqMapper.mapperLeagues,
 function(req, res) {

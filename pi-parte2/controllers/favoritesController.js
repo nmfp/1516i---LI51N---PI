@@ -1,4 +1,6 @@
+
 'use strict';
+
 const reqAPI = require('../middlewares/api/ApiRequest');
 const reqMapper = require('../middlewares/api/ApiMapper');
 const reqParser = require('../middlewares/api/ApiUrlHandler');
@@ -6,16 +8,19 @@ const reqParser = require('../middlewares/api/ApiUrlHandler');
 const express = require('express');
 const router = express.Router();
 const couchdb = require('node-couchdb');
+
 const request = require("request");
-const db = require("../middlewares/database/databaseHandler")
-let teams = []
-/* GET users listing. */
-router.post('/insertTeam', function(req, res, next) {
+const db = require("../middlewares/database/databaseHandler");
+
+let teams = [];
+
+
+router.post('/insertTeam', function(req, res) {
 
     let favoriteTeam = {
         "teamidL":req.body.idL,
         "teamidT":req.body.idT
-    }
+    };
 
     request.post({
         url: "http://localhost:5984/footballdata",
@@ -25,8 +30,7 @@ router.post('/insertTeam', function(req, res, next) {
         if (err) return new Error(err);
 
         res.redirect("/football-data/leagues")
-    })
-    //res.send('respond with a resource');
+    });
 });
 
 router.get('/all', reqAPI.requestDB, reqAPI.requestTeamDB, reqMapper.mapperTeamsFav,
