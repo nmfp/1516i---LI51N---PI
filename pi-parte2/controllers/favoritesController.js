@@ -1,19 +1,37 @@
 
 'use strict';
 
-const reqAPI = require('../middlewares/api/ApiRequest');
-const reqMapper = require('../middlewares/api/ApiMapper');
-const reqParser = require('../middlewares/api/ApiUrlHandler');
-
 const express = require('express');
 const router = express.Router();
-const couchdb = require('node-couchdb');
 
+const reqDBMapper = require('../middlewares/database/databaseMapper');
+const reqDBParser = require('../middlewares/database/databaseRequest');
+
+const couchdb = require('node-couchdb');
 const request = require("request");
-const db = require("../middlewares/database/databaseHandler");
 
 let teams = [];
 
+
+
+/*couchdb.del("tasks", function (err, resData) {
+    if (err)
+        return console.error(err);
+
+    console.dir(resData);
+});*/
+
+request(
+    {uri: 'http://localhost:5984/tasks', method: 'PUT'},
+    function (err, response, body) {
+        if (err)
+            throw err;
+        if (response.statusCode === 201)
+            console.log(body);
+        if (response.statusCode !== 201)
+            console.log(body);
+    }
+);
 
 router.post('/insertTeam', function(req, res) {
 
@@ -29,22 +47,23 @@ router.post('/insertTeam', function(req, res) {
     }, function(err, resp, body) {
         if (err) return new Error(err);
 
-        res.redirect("/football-data/leagues")
+        res.redirect("/favorites/all")
     });
 });
 
-router.get('/all', reqAPI.requestDB, reqAPI.requestTeamDB, reqMapper.mapperTeamsFav,
-    function(req, res) {
-        req.models = req.models || {};
-        let teams = req.models.teams;
-        let leagues = req.models.favouritesLeagueTeams;
-        let i=0;
-        for(let j=0;j<leagues.length;j++) {
-            let id = leagues[j];
-            teams[i++]["idL"] = id;
-        }
-        teams = req.models.teams;
-        res.render('leaguesView/favoritesController', { title: 'Teams info', leagues:leagues, teams: teams });
-    });
+router.get('/all', reqDBParser.requestDB, reqDBParser.requestTeamDB, reqDBMapper.mapperTeamsFav,
+function(req, res) {
+    req.models = req.models || {};
+    let teams = req.models.teams;
+    let leagues = req.models.favouritesLeagueTeams;
+    let i = 0;
+    for (let j = 0; j < leagues.length; j++) {
+        let id = leagues[j];
+        teams[i++]["idL"] = id;
+    }
+
+    teams = req.models.teams;
+    res.render('leaguesView/favoritesController', { title: 'Teams info', leagues:leagues, teams: teams });
+});
 
 module.exports = router;

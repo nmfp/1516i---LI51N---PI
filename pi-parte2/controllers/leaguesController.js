@@ -24,14 +24,9 @@ router.get('/leagues/:idL/teams', reqParser.urlParser, reqAPI.requestAPI, reqMap
 function(req, res) {
       req.models = req.models || {};
       let id = req.params.idL;
-      let league = {};
-      for (let i = 0; i < leagues.length; ++i) {
-            if(leagues[i]["id"] == id) {
-                  league = leagues[i];
-                  break;
-            }
-      }
+      let league = getLeague(id);
       teams = req.models.teams;
+      putIdTeams(id);
       for (let i = 0; i < teams.length; ++i) {
             teams[i]["idL"] = id;
       }
@@ -49,9 +44,9 @@ function(req, res) {
                   break;
             }
       }
+      putIdTeams(id);
       res.render('leaguesView/players', { title: 'Players info', team: team, players: req.models.players });
 });
-
 
 router.get('/leagues/:idL/teams/:idT/teamFixtures', reqParser.urlParser, reqAPI.requestAPI, reqMapper.mapperFixtures,
     function(req, res) {
@@ -71,13 +66,7 @@ router.get('/leagues/:idL/fixtures', reqParser.urlParser, reqAPI.requestAPI, req
 function(req, res) {
       req.models = req.models || {};
       let id = req.params.idL;
-      let league = {};
-      for (let i = 0; i < leagues.length; ++i) {
-            if(leagues[i]["id"] == id) {
-                  league = leagues[i];
-                  break;
-            }
-      }
+      let league = getLeague(id);
       let fixtures = req.models.fixtures;
       for (let i = 0; i < fixtures.length; ++i) {
             fixtures[i]["idL"] = id;
@@ -89,18 +78,27 @@ router.get('/leagues/:idL/leagueTables', reqParser.urlParser, reqAPI.requestAPI,
 function(req, res) {
       req.models = req.models || {};
       let id = req.params.idL;
-      let league = {};
-      for (let i = 0; i < leagues.length; ++i) {
-            if(leagues[i]["id"] == id) {
-                  league = leagues[i];
-                  break;
-            }
-      }
+      let league = getLeague(id);
       let leagueTables = req.models.leagueTables;
       for (let i = 0; i < leagueTables.length; ++i) {
             leagueTables[i]["idL"] = id;
       }
       res.render('leaguesView/leagueTables', { title: 'Table info', league: league, leagueTables: leagueTables });
 });
+
+function putIdTeams(id) {
+      teams.map((team) => {
+            team["idL"] = id;
+});
+}
+
+function getLeague(id) {
+      let leagueView = {};
+      leagues.forEach((league) => {
+            if (league["id"] == id)
+            leagueView = league;
+});
+      return leagueView;
+}
 
 module.exports = router;

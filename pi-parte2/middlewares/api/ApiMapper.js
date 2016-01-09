@@ -36,30 +36,7 @@ function mapperTeams(req, res, next) {
         for (let prop in teamObj) {
             if (prop == "_links") {
                 let idParser = obj[prop]["self"]["href"];
-                let id = idParser.substring(idParser.lastIndexOf('/')+1, idParser.length).trim(); //394
-                team["id"] = id;
-            }
-            team[prop] = obj[prop];
-        }
-        teams.push(team);
-    }
-
-    req.models.teams = teams;
-    return next();
-};
-
-function mapperTeamsFav(req, res, next) {
-    req.models = req.models || {};
-    let arr = req.models.resapi;
-
-    let teams = [];
-    for (let i = 0; i < arr.length; ++i) {
-        let team = {};
-        let obj = arr[i];
-        for (let prop in teamObj) {
-            if (prop == "_links") {
-                let idParser = obj[prop]["self"]["href"];
-                let id = idParser.substring(idParser.lastIndexOf('/')+1, idParser.length).trim(); //394
+                let id = getIdParser(idParser); //394
                 team["id"] = id;
             }
             team[prop] = obj[prop];
@@ -106,10 +83,10 @@ function mapperFixtures(req, res, next) {
             }
             if (prop == "_links") {
                 let idParserHome = obj[prop]["homeTeam"]["href"];
-                let idH = idParserHome.substring(idParserHome.lastIndexOf('/')+1, idParserHome.length).trim(); //5
+                let idH = getIdParser(idParserHome); //5
                 fixture["idH"] = idH;
                 let idParserAway = obj[prop]["awayTeam"]["href"];
-                let idA = idParserAway.substring(idParserAway.lastIndexOf('/')+1, idParserAway.length).trim(); //7
+                let idA = getIdParser(idParserAway); //7
                 fixture["idA"] = idA;
             }
             fixture[prop] = obj[prop];
@@ -132,7 +109,7 @@ function mapperLeagueTables(req, res, next) {
         for (let prop in leagueTableObj) {
             if (prop == "_links") {
                 let idParserTeam = obj[prop]["team"]["href"];
-                let idT = idParserTeam.substring(idParserTeam.lastIndexOf('/')+1, idParserTeam.length).trim(); //5
+                let idT = getIdParser(idParserTeam); //5
                 leagueTable["idT"] = idT;
             }
             leagueTable[prop] = obj[prop];
@@ -144,11 +121,15 @@ function mapperLeagueTables(req, res, next) {
     return next();
 };
 
+
+function getIdParser(url) {
+    return url.substring(url.lastIndexOf('/')+1, url.length).trim();
+}
+
 module.exports = {
     mapperLeagues: mapperLeagues,
     mapperTeams: mapperTeams,
     mapperPlayers: mapperPlayers,
     mapperFixtures: mapperFixtures,
-    mapperLeagueTables: mapperLeagueTables,
-    mapperTeamsFav:mapperTeamsFav
+    mapperLeagueTables: mapperLeagueTables
 };
