@@ -51,7 +51,7 @@ function reqTeams(favTeams, next, req) {
     favTeams.forEach(function (team) {
         resultLeagues.push(team.idL);
         request({
-                url: "".concat("http://api.football-data.org/v1/teams/", team.idT),
+                url:"http://api.football-data.org/v1/teams/"+team.teamidT,
                 headers: API_KEY
             },
             function (err, resp, body) {
@@ -61,6 +61,7 @@ function reqTeams(favTeams, next, req) {
                     if (i++ == favTeams.length - 1)
                         mapper(req, result, resultLeagues, next);
                 } else {
+                    console.log(team.idT)
                     return new Error(err);
                 }
             });

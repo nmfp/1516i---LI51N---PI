@@ -22,7 +22,7 @@ let teams = [];
 });*/
 
 request(
-    {uri: 'http://localhost:5984/tasks', method: 'PUT'},
+    {uri: 'http://localhost:5984/footballdata', method: 'PUT'},
     function (err, response, body) {
         if (err)
             throw err;
@@ -33,16 +33,31 @@ request(
     }
 );
 
+router.post('/insertGroup',function(req,res) {
+    let group = {
+        "group": req.body.groupName,
+        "teams": []
+    };
+    request.post({
+        url: "http://localhost:5984/footballdata",
+        body: group,
+        json: true,
+    }, function (err, resp, body) {
+        if (err) return new Error(err);
+        res.redirect("/favorites/all")
+    });
+});
+
+
 router.post('/insertTeam', function(req, res) {
 
     let favoriteTeam = {
-        "teamidL":req.body.idL,
-        "teamidT":req.body.idT
+        "idL":req.body.idL,
+        "idT":req.body.idT
     };
 
-    request.post({
+    request({
         url: "http://localhost:5984/footballdata",
-        body: favoriteTeam,
         json: true,
     }, function(err, resp, body) {
         if (err) return new Error(err);
