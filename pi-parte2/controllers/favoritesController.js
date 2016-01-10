@@ -45,28 +45,43 @@ router.post('/insertGroup',function(req,res) {
         json: true,
     }, function (err, resp, body) {
         if (err) return new Error(err);
-        res.redirect("/favorites/all")
+        res.redirect("/favorites/all");
     });
 });
 
-
-router.post('/insertTeam', function(req, res) {
-
+router.post('/insertTeam', reqDBParser.requestDB, reqDBParser.requestFavoritesName, function(req, res) {
     let favoriteTeam = {
-        "idL":req.body.idL,
-        "idT":req.body.idT
+        "idL": req.body.idL,
+        "idT": req.body.idT
+    };
+    req.models = req.models || {};
+
+    let dbObjs = req.models.favoriteNames;
+    let groupObj = {};
+    for (let i = 0; i < dbObjs.length; ++i) {
+        if (dbObjs[i]["name"] == req.body.favoriteName) {
+            groupObj = dbObjs[i];
+            break;
+        }
+    }
+
+    groupObj["dbObj"]["teams"].push(favoriteTeam);
+    let header = {
+        _id: groupObj["dbObj"]["_id"],
+        _rev: groupObj["dbObj"]["_rev"],
+        group: groupObj["name"],
+        teams: groupObj["dbObj"]["teams"]
     };
 
-    request.post({
-        url: "http://localhost:5984/footballdata",
-        body:favoriteTeam,
-        json: true
-    }, function(err, resp, body) {
-        if (err) return new Error(err);
-
-        res.redirect("/favorites/")
+    couchdb.update("footballdata", header, function(err, resData) {
+        if (err)
+            console.log(err);
+        console.log("BOAAAA");
+        console.log(resData);
+        return res.redirect("/favorites/all");
     });
 });
+
 router.get('/all', reqDBParser.requestDBGroups,reqDBParser.requestNameGroup,
     function(req, res) {
         req.models = req.models || {};

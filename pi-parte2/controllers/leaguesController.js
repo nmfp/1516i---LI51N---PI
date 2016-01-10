@@ -8,6 +8,8 @@ const reqAPI = require('../middlewares/api/ApiRequest');
 const reqParser = require('../middlewares/api/ApiUrlHandler');
 const reqMapper = require('../middlewares/api/ApiMapper');
 
+const reqDBParser = require('../middlewares/database/databaseRequest');
+
 let leagues = [];
 let teams = [];
 
@@ -34,18 +36,31 @@ function(req, res) {
 });
 
 router.get('/leagues/:idL/teams/:idT/players', reqParser.urlParser, reqAPI.requestAPI, reqMapper.mapperPlayers,
+    reqDBParser.requestDB, reqDBParser.requestFavoritesName,
 function(req, res) {
       req.models = req.models || {};
       let id = req.params.idT;
       let team = {};
+      let favoriteNames = req.models.favoriteNames
+      putIdTeams(req.params.idL);
       for (let i = 0; i < teams.length; ++i) {
             if(teams[i]["id"] == id) {
                   team = teams[i];
                   break;
             }
       }
-      putIdTeams(req.params.idL);
-      res.render('leaguesView/players', { title: 'Players info', team: team, players: req.models.players });
+      if (teams.length === 0) {
+            for (let i = 0; favoriteNames.length; ++i) {
+                  let arr = favoriteNames[i]["dbObj"]["teams"];
+                  for (let j = 0; arr.length; ++j) {
+                        if (arr["idT"] === id) {
+                              team["id"] = id;
+                              team["idL"] = arr["idL"];
+                        }
+                  }
+            }
+      }
+      res.render('leaguesView/players', { title: 'Players info', team: team, players: req.models.players, favoriteNames: favoriteNames });
 });
 
 router.get('/leagues/:idL/teams/:idT/teamFixtures', reqParser.urlParser, reqAPI.requestAPI, reqMapper.mapperFixtures,

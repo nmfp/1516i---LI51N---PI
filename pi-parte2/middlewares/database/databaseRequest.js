@@ -168,6 +168,30 @@ function mapper(req, result, resultLeagues, next) {
     return next();
 };
 
+function requestFavoritesName(req, res, next) {
+    console.log("ENTROU NO REQ TEM DB");
+    let dbId = req.models.favoritesTeams;
+    let i = 0;
+    let result = [];
+    req.models = req.models || {};
+    dbId.forEach(function (favorite) {
+        request("http://localhost:5984/footballdata/"+favorite["id"],
+            function(err, resp, body) {
+                if (!err && resp["statusCode"] == 200) {
+                    let obj = JSON.parse(body);
+                    result.push({"name": obj["group"], "dbObj": obj});
+
+                    if (i++ == dbId.length - 1 ) {
+                        req.models.favoriteNames = result;
+                        return next();
+                    }
+                } else {
+                    return new Error(err);
+                }
+            });
+    });
+
+};
 
 module.exports = {
     requestDB: requestDB,
@@ -175,5 +199,6 @@ module.exports = {
     requestDBGroups:requestDBGroups,
     requestNameGroup:requestNameGroup,
     reqTeamsGroup:reqTeamsGroup,
-    teamsOfGroups:teamsOfGroups
+    teamsOfGroups:teamsOfGroups,
+    requestFavoritesName: requestFavoritesName
 };
