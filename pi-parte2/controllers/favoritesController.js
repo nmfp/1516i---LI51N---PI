@@ -10,6 +10,7 @@ const reqDBParser = require('../middlewares/database/databaseRequest');
 const couchdb = require('node-couchdb');
 const request = require("request");
 
+let groups= [];
 let teams = [];
 
 
@@ -56,16 +57,42 @@ router.post('/insertTeam', function(req, res) {
         "idT":req.body.idT
     };
 
-    request({
+    request.post({
         url: "http://localhost:5984/footballdata",
-        json: true,
+        body:favoriteTeam,
+        json: true
     }, function(err, resp, body) {
         if (err) return new Error(err);
 
-        res.redirect("/favorites/all")
+        res.redirect("/favorites/")
     });
 });
+router.get('/all', reqDBParser.requestDBGroups,reqDBParser.requestNameGroup,
+    function(req, res) {
+        req.models = req.models || {};
+        groups = req.models.groupsName;
+        res.render('leaguesView/group', {  groups: groups});
+    });
 
+
+router.get('/:idGroup/teams', reqDBParser.teamsOfGroups, reqDBParser.reqTeamsGroup, reqDBMapper.mapperTeamsFav,
+    function(req, res) {
+
+        req.models = req.models || {};
+        let teams = req.models.teams;
+        let groupName = req.params.idGroup;
+        let leagues = req.models.favouritesLeagueTeams;
+        let i = 0;
+        for (let j = 0; j < leagues.length; j++) {
+            let id = leagues[j];
+            teams[i++]["idL"] = id;
+        }
+
+        teams = req.models.teams;
+        res.render('leaguesView/favoritesTeams', {groupName:groupName,leagues:leagues, teams: teams });
+    });
+
+/*
 router.get('/all', reqDBParser.requestDB, reqDBParser.requestTeamDB, reqDBMapper.mapperTeamsFav,
 function(req, res) {
     req.models = req.models || {};
@@ -80,5 +107,6 @@ function(req, res) {
     teams = req.models.teams;
     res.render('leaguesView/favoritesController', { title: 'Teams info', leagues:leagues, teams: teams });
 });
+*/
 
 module.exports = router;

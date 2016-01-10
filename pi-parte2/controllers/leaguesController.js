@@ -44,7 +44,7 @@ function(req, res) {
                   break;
             }
       }
-      putIdTeams(id);
+      putIdTeams(req.params.idL);
       res.render('leaguesView/players', { title: 'Players info', team: team, players: req.models.players });
 });
 
