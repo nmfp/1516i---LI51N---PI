@@ -15,13 +15,6 @@ let teams = [];
 
 
 
-/*couchdb.del("tasks", function (err, resData) {
-    if (err)
-        return console.error(err);
-
-    console.dir(resData);
-});*/
-
 request(
     {uri: 'http://localhost:5984/footballdata', method: 'PUT'},
     function (err, response, body) {
@@ -107,21 +100,30 @@ router.get('/:idGroup/teams', reqDBParser.teamsOfGroups, reqDBParser.reqTeamsGro
         res.render('leaguesView/favoritesTeams', {groupName:groupName,leagues:leagues, teams: teams });
     });
 
-/*
-router.get('/all', reqDBParser.requestDB, reqDBParser.requestTeamDB, reqDBMapper.mapperTeamsFav,
-function(req, res) {
-    req.models = req.models || {};
-    let teams = req.models.teams;
-    let leagues = req.models.favouritesLeagueTeams;
-    let i = 0;
-    for (let j = 0; j < leagues.length; j++) {
-        let id = leagues[j];
-        teams[i++]["idL"] = id;
+router.post("/deleteGroup", reqDBParser.requestDB, reqDBParser.requestFavoritesName, function(req,res){
+
+    let dbObjs = req.models.favoriteNames;
+    let groupObj = {};
+    for (let i = 0; i < dbObjs.length; ++i) {
+        if (dbObjs[i]["name"] == req.body.favoriteName) {
+            groupObj = dbObjs[i];
+            break;
+        }
     }
+    let header = {
+        _id: groupObj["dbObj"]["_id"],
+        _rev: groupObj["dbObj"]["_rev"],
+        group: groupObj["name"],
+        teams: groupObj["dbObj"]["teams"]
+    };
 
-    teams = req.models.teams;
-    res.render('leaguesView/favoritesController', { title: 'Teams info', leagues:leagues, teams: teams });
-});
-*/
+    couchdb.del("footballdata", header._id, header._rev, function (err, resData) {
+        if (err)
+            return console.error(err);
 
+        console.dir(resData);
+        return res.redirect("/favorites/all")
+    });
+
+})
 module.exports = router;
