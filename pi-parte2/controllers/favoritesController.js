@@ -97,27 +97,4 @@ router.get('/:idGroup/teams', reqDBParser.teamsOfGroups, reqDBParser.reqTeamsGro
         res.render('leaguesView/favoritesTeams', {groupName:groupName,leagues:leagues, teams: teams });
     });
 
-/*
-router.get('/all', reqDBParser.requestDB, reqDBParser.requestTeamDB, reqDBMapper.mapperTeamsFav,
-function(req, res) {
-    req.models = req.models || {};
-    let teams = req.models.teams;
-    let leagues = req.models.favouritesLeagueTeams;
-    let i = 0;
-    for (let j = 0; j < leagues.length; j++) {
-        let id = leagues[j];
-    let header = {
-        _id: groupObj["dbObj"]["_id"],
-        _rev: groupObj["dbObj"]["_rev"],
-        group: groupObj["name"],
-        teams: groupObj["dbObj"]["teams"]
-    };
-    teams = req.models.teams;
-    res.render('leaguesView/favoritesController', { title: 'Teams info', leagues:leagues, teams: teams });
-            return console.error(err);
-
-        console.dir(resData);
-        return res.redirect("/favorites/all")
-});
-})
 module.exports = router;

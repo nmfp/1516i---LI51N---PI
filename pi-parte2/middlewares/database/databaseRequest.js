@@ -40,6 +40,8 @@ function teamsOfGroups (req, res, next) {
                 return next();
             }
         });
+        if (result.length == 0)
+            return next();
     });
 };
 
@@ -67,6 +69,8 @@ function reqTeamsGroup(req, res, next) {
                 }
             });
     });
+    if (group.length === 0)
+        return next();
 };
 
 function requestDBGroups(req, res, next) {
