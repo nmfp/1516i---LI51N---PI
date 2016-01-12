@@ -43,6 +43,7 @@ function(req, res) {
       let team = {};
       let favoriteNames = req.models.favoriteNames
       putIdTeams(req.params.idL);
+      let isFav = false;
       for (let i = 0; i < teams.length; ++i) {
             if(teams[i]["id"] == id) {
                   team = teams[i];
@@ -50,17 +51,31 @@ function(req, res) {
             }
       }
       if (teams.length === 0) {
-            for (let i = 0; favoriteNames.length; ++i) {
+            for (let i = 0; i < favoriteNames.length; ++i) {
                   let arr = favoriteNames[i]["dbObj"]["teams"];
-                  for (let j = 0; arr.length; ++j) {
-                        if (arr["idT"] === id) {
-                              team["id"] = id;
-                              team["idL"] = arr["idL"];
+                  if (Array.isArray(arr))
+                        for (let j = 0; j < arr.length; ++j) {
+                              if (arr[j]["idT"] === id) {
+                                    team["id"] = id;
+                                    team["idL"] = arr[j]["idL"];
+                              }
                         }
-                  }
             }
       }
-      res.render('leaguesView/players', { title: 'Players info', team: team, players: req.models.players, favoriteNames: favoriteNames });
+      for (let i = 0; i < favoriteNames.length; ++i) {
+            let arr = favoriteNames[i]["dbObj"]["teams"];
+            if (Array.isArray(arr))
+                  for (let j = 0; j < arr.length; ++j) {
+                        if (arr[j]["idT"] === id) {
+                              isFav = true;
+                              break;
+                        }
+                  }
+            if (isFav) {
+                  break;
+            }
+      }
+      res.render('leaguesView/players', { title: 'Players info', team: team, players: req.models.players, favoriteNames: favoriteNames, isFav: isFav });
 });
 
 router.get('/leagues/:idL/teams/:idT/teamFixtures', reqParser.urlParser, reqAPI.requestAPI, reqMapper.mapperFixtures,

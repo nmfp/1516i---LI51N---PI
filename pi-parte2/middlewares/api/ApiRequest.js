@@ -23,5 +23,5 @@ function requestAPI(req, res, next) {
 
 
 module.exports = {
-    requestAPI: requestAPI,
+    requestAPI: requestAPI
 };

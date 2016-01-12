@@ -3,7 +3,7 @@
 
 const API_KEY = {'X-Auth-Token': 'e5c32bfec9734a3b8e65cd7b1a18b702'};
 const request = require('request');
-const couch = require('node-couchdb')
+const couch = require('node-couchdb');
 
 function requestDB(req, res, next) {
     request({
@@ -22,27 +22,26 @@ function requestDB(req, res, next) {
     });
 };
 
-function teamsOfGroups (req,res,next){
+function teamsOfGroups (req, res, next) {
     req.models = req.models || {};
     let id = req.params.idGroup;
-    let viewName ="_design/formatDB/_view/formatDB";
+    let viewName = "_design/formatDB/_view/formatDB";
     let database = "footballdata";
-    let result=[]
-    couch.get(database,viewName,null,function (err,resData){
-        if(err)
+    let result = [];
+    couch.get(database, viewName, null, function (err, resData){
+        if (err)
             return new Error(err);
 
         result = resData.data.rows;
 
-        result.forEach(function(group)
-        {
+        result.forEach(function(group) {
             if (group.key === id) {
                 req.models.favoritesTeams = group["value"];
                 return next();
             }
-        })
+        });
     });
-}
+};
 
 
 function reqTeamsGroup(req, res, next) {
@@ -64,7 +63,6 @@ function reqTeamsGroup(req, res, next) {
                     if (i++ == group.length - 1)
                         mapper(req, result, resultLeagues, next);
                 } else {
-                    console.log(team.idT)
                     return new Error(err);
                 }
             });
@@ -111,7 +109,8 @@ function requestNameGroup(req, res, next) {
                 }
             });
     });
-
+    if (dbId.length == 0)
+        return next();
 };
 
 function requestTeamDB(req, res, next) {
@@ -153,7 +152,6 @@ function reqTeams(favTeams, next, req) {
                     if (i++ == favTeams.length - 1)
                         mapper(req, result, resultLeagues, next);
                 } else {
-                    console.log(team.idT)
                     return new Error(err);
                 }
             });
@@ -169,7 +167,6 @@ function mapper(req, result, resultLeagues, next) {
 };
 
 function requestFavoritesName(req, res, next) {
-    console.log("ENTROU NO REQ TEM DB");
     let dbId = req.models.favoritesTeams;
     let i = 0;
     let result = [];
