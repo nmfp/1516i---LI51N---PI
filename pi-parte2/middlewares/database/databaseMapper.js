@@ -8,6 +8,10 @@ function mapperTeamsFav(req, res, next) {
     req.models = req.models || {};
     let arr = req.models.resapi;
 
+    if (arr === undefined) {
+        return next();
+    }
+
     let teams = [];
     for (let i = 0; i < arr.length; ++i) {
         let team = {};

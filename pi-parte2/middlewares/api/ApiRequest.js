@@ -15,12 +15,11 @@ function requestAPI(req, res, next) {
                 req.models = req.models || {};
                 req.models.resapi = result;
                 return next();
-            } else {
-                return new Error(err);
+            } else if (err) {
+                console.log(err.message);
             }
         });
 };
-
 
 module.exports = {
     requestAPI: requestAPI

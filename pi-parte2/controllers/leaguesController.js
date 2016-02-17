@@ -41,7 +41,7 @@ function(req, res) {
       req.models = req.models || {};
       let id = req.params.idT;
       let team = {};
-      let favoriteNames = req.models.favoriteNames
+      let favoriteNames = req.models.favoriteNames;
       putIdTeams(req.params.idL);
       let isFav = false;
       for (let i = 0; i < teams.length; ++i) {
@@ -74,6 +74,24 @@ function(req, res) {
             if (isFav) {
                   break;
             }
+      }
+      let favs = [];
+      for (let i = 0; i < favoriteNames.length; ++i) {
+            let arr = favoriteNames[i]["dbObj"]["teams"];
+            if (arr !== undefined) {
+                  let ret = -1;
+                  arr.find(function(team) {
+                        if ((team.idT)*1 === (req.params.idT)*1)
+                              ret = 1;
+                        return ret;
+                  });
+                  if (ret == -1) {
+                        favs.push(favoriteNames[i]);
+                  }
+            }
+      }
+      if (favs.length > 0) {
+            favoriteNames = favs;
       }
       res.render('leaguesView/players', { title: 'Players info', team: team, players: req.models.players, favoriteNames: favoriteNames, isFav: isFav });
 });
@@ -119,7 +137,7 @@ function(req, res) {
 function putIdTeams(id) {
       teams.map((team) => {
             team["idL"] = id;
-});
+      });
 }
 
 function getLeague(id) {
@@ -127,7 +145,7 @@ function getLeague(id) {
       leagues.forEach((league) => {
             if (league["id"] == id)
             leagueView = league;
-});
+      });
       return leagueView;
 }
 

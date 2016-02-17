@@ -1,0 +1,50 @@
+
+<!-- Main jumbotron for a primary marketing message or call to action -->
+<div class="jumbotron">
+    <div class="container">
+        <h1 id="groupName">{{groupName}}</h1>
+    </div>
+
+    <div class = "container">
+        <form action="/favorites/deleteGroup" method="post">
+            <button type="submit" class="btn btn-primary">Delete Group!</button>
+            <input name = "favoriteName" value="{{groupName}}" style="display:none" />
+        </form>
+    </div>
+
+</div>
+
+<div class="container">
+
+    <div class="row">
+        <p>Choose here a team to add!</p>
+        <div id="teams" class="row marketing">
+            <select id="league" onchange="changeTeams()">
+                <option selected disabled hidden value=''></option>
+                {{#each leaguesA}}
+                    <option value="{{id}}">{{caption}}</option>
+                {{/each}}
+            </select>
+
+        </div>
+    </div>
+
+    <div class="row" id="teamFav">
+        {{#if control}}
+            <p id="noFavs">No teams yet in the group</p>
+        {{else}}
+            {{#each teams}}
+                <div class="col-md-4 teamsCSS">
+                    <h2><a href="/football-data/leagues/{{idL}}/teams/{{id}}/players">{{name}}</a></h2>
+                    <p>Short name: {{shortName}}</p>
+                    <p>Value: {{squadMarketValue}}</p>
+                    <img src="{{crestUrl}}" width="100" height="100" class="imgCSS"/>
+                </div>
+            {{/each}}
+        {{/if}}
+
+    </div>
+
+    <hr>
+
+</div> <!-- /container -->

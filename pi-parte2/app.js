@@ -7,6 +7,11 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const hbs = require('express-handlebars');
 
+const passport = require('passport');
+const LocalStrategy = require('passport-local').Strategy;
+
+const userHandler = require('./middlewares/users/usersHandler');
+
 const app = express();
 
 // view engine setup
@@ -21,15 +26,44 @@ app.use(express.static(path.join(__dirname, 'public')));
 //register the controllers
 const leagueController = require('./controllers/leaguesController');
 const favoritesController = require('./controllers/favoritesController');
+const usersController = require('./controllers/usersController');
 
 app.use('/football-data', leagueController);
 app.use('/favorites', favoritesController);
+app.use('/user', usersController);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   var err = new Error('Not Found');
   err.status = 404;
   next(err);
+});
+
+// authentication
+
+app.use(require('express-session')({ resave: false, saveUninitialized: false, secret: 'mysuperbigsecret'}));
+app.use(passport.initialize());
+app.use(passport.session());
+
+passport.use(new LocalStrategy(function (username, password, done)  {
+  userHandler.getOne(username, function (err, users) {
+    if (err)
+      console.log(err.message);
+    const u = users;
+    if (!u)
+      return done(null, false, 'Username invalid!');
+    if(u.password != password)
+      return done(null, false, 'Passowrd invalid!');
+    return done(null, u);
+  });
+}));
+
+passport.serializeUser(function(user, done) {
+  done(null, user._id);
+});
+
+passport.deserializeUser(function(id, done) {
+  userHandler.getOne(id, done)
 });
 
 // error handlers

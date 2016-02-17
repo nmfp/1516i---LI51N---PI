@@ -29,6 +29,8 @@ const map = {
 };
 
 function urlParser(req, res, next) {
+    req.models = req.models || {};
+    
     let url = req.url;
     let option = "";
     let arr = url.split('/');
@@ -48,7 +50,6 @@ function urlParser(req, res, next) {
         }
     }
 
-    req.models = req.models || {};
     if (req.params.idL != undefined) {
         option = option.replace("{idL}", req.params.idL);
     }

@@ -3,12 +3,15 @@
 
 const API_KEY = {'X-Auth-Token': 'e5c32bfec9734a3b8e65cd7b1a18b702'};
 const request = require('request');
-const couch = require('node-couchdb');
+const couchdb = require('node-couchdb');
+
+const db_name = "footballdata";
+const db_url = "http://localhost:5984/footballdata";
 
 function requestDB(req, res, next) {
     request({
-        url: "http://localhost:5984/footballdata/_all_docs",
-        json: true,
+        url: db_url+"/_all_docs",
+        json: true
     }, function (err, resp, body) {
         if (!err && resp["statusCode"] == 200) {
             let teamsID = body.rows;
@@ -16,8 +19,8 @@ function requestDB(req, res, next) {
             req.models.favoritesTeams = teamsID;
 
             return next();
-        }else{
-            return new Error(err);
+        } else if (err) {
+            console.log(err.message);
         }
     });
 };
@@ -26,11 +29,11 @@ function teamsOfGroups (req, res, next) {
     req.models = req.models || {};
     let id = req.params.idGroup;
     let viewName = "_design/formatDB/_view/formatDB";
-    let database = "footballdata";
+    let database = db_name;
     let result = [];
-    couch.get(database, viewName, null, function (err, resData){
+    couchdb.get(database, viewName, null, function (err, resData){
         if (err)
-            return new Error(err);
+            console.log(err.message);
 
         result = resData.data.rows;
 
@@ -44,7 +47,6 @@ function teamsOfGroups (req, res, next) {
             return next();
     });
 };
-
 
 function reqTeamsGroup(req, res, next) {
     let group = req.models.favoritesTeams;
@@ -64,8 +66,8 @@ function reqTeamsGroup(req, res, next) {
                     result.push(obj);
                     if (i++ == group.length - 1)
                         mapper(req, result, resultLeagues, next);
-                } else {
-                    return new Error(err);
+                } else if (err) {
+                    console.log(err.message);
                 }
             });
     });
@@ -75,8 +77,8 @@ function reqTeamsGroup(req, res, next) {
 
 function requestDBGroups(req, res, next) {
     request({
-        url: "http://localhost:5984/footballdata/_all_docs",
-        json: true,
+        url: db_url+"/_all_docs",
+        json: true
     }, function (err, resp, body) {
         if (!err && resp["statusCode"] == 200) {
             let group = body.rows;
@@ -84,8 +86,8 @@ function requestDBGroups(req, res, next) {
             req.models.groups = group;
 
             return next();
-        }else{
-            return new Error(err);
+        } else if (err) {
+            console.log(err.message);
         }
     });
 };
@@ -96,11 +98,12 @@ function requestNameGroup(req, res, next) {
     let result = [];
 
     dbId.forEach(function (group) {
-        request("http://localhost:5984/footballdata/"+group["id"],
+        request(db_url+"/"+group["id"],
             function(err, resp, body) {
                 if (!err && resp["statusCode"] == 200) {
                     let obj = JSON.parse(body);
-                    result.push(obj);
+                    if (obj["teams"] !== undefined)
+                        result.push(obj);
 
                     if (i++ == dbId.length - 1 ) {
                         req.models = req.models || {};
@@ -108,8 +111,8 @@ function requestNameGroup(req, res, next) {
                         req.models.groupsName = result;
                         return next();
                     }
-                } else {
-                    return new Error(err);
+                } else if (err) {
+                    console.log(err.message);
                 }
             });
     });
@@ -122,7 +125,7 @@ function requestTeamDB(req, res, next) {
     let i = 0;
     let result = [];
     dbId.forEach(function (teamid) {
-        request("http://localhost:5984/footballdata/"+teamid["id"],
+        request(db_url+"/"+teamid["id"],
             function(err, resp, body) {
                 if (!err && resp["statusCode"] == 200) {
                     let obj = JSON.parse(body);
@@ -131,8 +134,8 @@ function requestTeamDB(req, res, next) {
                     if (i++ == dbId.length - 1 ) {
                         reqTeams(result, next, req);
                     }
-                } else {
-                    return new Error(err);
+                } else if (err) {
+                    console.log(err.message);
                 }
             });
     });
@@ -155,8 +158,8 @@ function reqTeams(favTeams, next, req) {
                     result.push(obj);
                     if (i++ == favTeams.length - 1)
                         mapper(req, result, resultLeagues, next);
-                } else {
-                    return new Error(err);
+                } else if (err) {
+                    console.log(err.message);
                 }
             });
     });
@@ -176,7 +179,7 @@ function requestFavoritesName(req, res, next) {
     let result = [];
     req.models = req.models || {};
     dbId.forEach(function (favorite) {
-        request("http://localhost:5984/footballdata/"+favorite["id"],
+        request(db_url+"/"+favorite["id"],
             function(err, resp, body) {
                 if (!err && resp["statusCode"] == 200) {
                     let obj = JSON.parse(body);
@@ -186,8 +189,8 @@ function requestFavoritesName(req, res, next) {
                         req.models.favoriteNames = result;
                         return next();
                     }
-                } else {
-                    return new Error(err);
+                } else if (err) {
+                    console.log(err.message);
                 }
             });
     });
