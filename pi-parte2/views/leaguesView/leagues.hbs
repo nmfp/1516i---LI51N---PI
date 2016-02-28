@@ -1,24 +1,27 @@
 
-<div class="container">
+    <div class="row">
 
-    <div class="jumbotron">
-        <h1>{{title}}</h1>
-        <p class="lead">{{description}}</p>
+        <div class="jumbotron">
+            <h1>{{title}}</h1>
+            <p class="lead">{{description}}</p>
 
-    </div>
-
-    <div class="row marketing">
-
-{{#each leagues}}
-        <div class="col-lg-6">
-            <h3><b><i>League</i></b>: <a href="/football-data/leagues/{{id}}/teams">{{caption}}</a></h3>
-            <p><b>Season</b>: {{year}}</p>
-            <p><b>Teams</b>: {{numberOfTeams}}</p>
         </div>
-{{/each}}
+
+        <div class="row marketing">
+
+        {{#each leagues}}
+            <div class="col-lg-6">
+                <h3><b><i>League</i></b>: <a href="/football-data/leagues/{{id}}/teams">{{caption}}</a></h3>
+                <p><b>Season</b>: {{year}}</p>
+                <p><b>Teams</b>: {{numberOfTeams}}</p>
+            </div>
+        {{/each}}
+
+        </div>
+
+        <hr>
 
     </div>
 
-    <hr>
-
-</div> <!-- /container -->
+    <script src="/js/couchdbPing.js"></script>
+    <script src="/js/couchdbUserPing.js"></script>

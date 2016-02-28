@@ -1,29 +1,22 @@
 
-<!-- Main jumbotron for a primary marketing message or call to action -->
-<div class="jumbotron">
-    <div class="container">
-        <h1>{{league.caption}}</h1>
-        <p><b>Year</b>: {{league.year}}</p>
+    <div class="jumbotron">
+        <div class="container">
+            <h1>{{league.caption}}</h1>
+            <p><b>Year</b>: {{league.year}}</p>
+        </div>
     </div>
-</div>
 
-
-<div class="container">
     <div class="row">
         {{#each fixtures}}
             <div class="col-sm-6 col-md-4">
                 <div class="thumbnail">
                     <div class="caption" style="text-align: center">
                         <h3>{{date}}</h3>
-                        <p><b>Home</b>: <a href="/football-data/leagues/{{idL}}/teams/{{idH}}/players">{{homeTeamName}}</a> ({{result.goalsHomeTeam}})</p>
+                        <p><b>Home</b>: <a href="/football-data/leagues/{{../league.id}}/teams/{{idH}}/players">{{homeTeamName}}</a> ({{result.goalsHomeTeam}})</p>
                         <p><b>vs</b></p>
-                        <p><b>Away</b>: <a href="/football-data/leagues/{{idL}}/teams/{{idA}}/players">{{awayTeamName}}</a> ({{result.goalsAwayTeam}})</p>
+                        <p><b>Away</b>: <a href="/football-data/leagues/{{../league.id}}/teams/{{idA}}/players">{{awayTeamName}}</a> ({{result.goalsAwayTeam}})</p>
                     </div>
                 </div>
             </div>
         {{/each}}
     </div>
-
-    <hr>
-
-</div> <!-- /container -->

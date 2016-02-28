@@ -20,19 +20,30 @@ let teams = [];
 const db_name = "footballdata";
 const db_url = "http://localhost:5984/"+db_name;
 
-request(
-    {uri: db_url, method: 'PUT'},
-    function (err, response, body) {
-        if (err)
-            throw err;
-        if (response.statusCode === 201)
-            console.log(body);
-        if (response.statusCode !== 201)
-            console.log(body);
-    }
-);
+//create database
+router.get('/pingdb',
+    function(req, res, next) {
+        request(
+            {uri: db_url, method: 'GET'},
+            function (err, response, body) {
+                if (err)
+                    throw err;
+                if (response.statusCode !== 201){
+                    request(
+                        {uri: db_url, method: 'PUT'},
+                        function (err, response, body) {
+                            if (err)
+                                return next(err);
+                            if (response.statusCode === 200)
+                                console.log(db_name+" is up!");
+                        }
+                    );
+                }
+            }
+        );
+    });
 
-router.post('/insertGroup',function(req, res) {
+router.post('/insertGroup',function(req, res, next) {
     let group = {
         "group": req.body.groupName,
         "teams": []
@@ -43,7 +54,7 @@ router.post('/insertGroup',function(req, res) {
         json: true
     }, function (err, resp, body) {
         if (err)
-            console.log(err.message);
+            return next(err);
 
         let urRet = req.body.groupName+"/teams";
         res.redirect(urRet);
@@ -51,7 +62,7 @@ router.post('/insertGroup',function(req, res) {
 });
 
 router.post('/insertTeam', reqDBParser.requestDB, reqDBParser.requestFavoritesName,
-    function(req, res) {
+    function(req, res, next) {
         let favoriteTeam = {
             "idL": req.body.idL,
             "idT": req.body.idT
@@ -77,14 +88,14 @@ router.post('/insertTeam', reqDBParser.requestDB, reqDBParser.requestFavoritesNa
 
         couchdb.update(db_name, header, function(err, resData) {
             if (err)
-                console.log(err.message);
+                return next(err);
             let urRet = req.body.favoriteName+"/teams";
             return res.redirect(urRet);
         });
     });
 
 router.post('/deleteGroup', reqDBParser.requestDB, reqDBParser.requestFavoritesName,
-    function(req, res) {
+    function(req, res, next) {
         req.models = req.models || {};
 
         let dbObjs = req.models.favoriteNames;
@@ -101,7 +112,7 @@ router.post('/deleteGroup', reqDBParser.requestDB, reqDBParser.requestFavoritesN
 
         couchdb.del(db_name, id, rev, function(err, resData) {
             if (err)
-                console.log(err.message);
+                return next(err);
 
             return res.redirect("/favorites/all");
         });
@@ -123,7 +134,7 @@ router.post('/changeT/:idL', reqFavorites.requestAPI, reqMapper.mapperTeams,
 });
 
 router.post('/addT/:groupN/:idL/:idT', reqDBParser.requestDB, reqDBParser.requestFavoritesName, reqFavorites.requestAPI, reqMapper.mapperTeams,
-    function(req, res) {
+    function(req, res, next) {
         let favoriteTeam = {
             "idL": req.params.idL,
             "idT": req.params.idT
@@ -149,7 +160,7 @@ router.post('/addT/:groupN/:idL/:idT', reqDBParser.requestDB, reqDBParser.reques
 
         couchdb.update("db_name", header, function(err, resData) {
             if (err)
-                console.log(err.message);
+                return next(err);
         });
         let teams = req.models.teams;
         let idT = req.params.idT;

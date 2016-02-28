@@ -8,13 +8,13 @@
       "href": ""
     }
   },
-  "date":"",
+  "date": "",
   "status": "",
-  "matchday":"",
-  "homeTeamName":"",
-  "awayTeamName":"",
+  "matchday": "",
+  "homeTeamName": "",
+  "awayTeamName": "",
   "result":{
-    "goalsHomeTeam":"",
-    "goalsAwayTeam":""
+    "goalsHomeTeam": "",
+    "goalsAwayTeam": ""
   }
 }

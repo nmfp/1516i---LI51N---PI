@@ -16,40 +16,28 @@ let teams = [];
 //localhost:3000/football-data/leagues
 router.get('/leagues', reqParser.urlParser, reqAPI.requestAPI, reqMapper.mapperLeagues,
 function(req, res) {
-      req.models = req.models || {};
       leagues = req.models.leagues;
       let descr = "This page have the information of all leagues from 2015/16 football season!";
+
       res.render('leaguesView/leagues', { title: 'Leagues info', description: descr, leagues: leagues });
 });
 
 router.get('/leagues/:idL/teams', reqParser.urlParser, reqAPI.requestAPI, reqMapper.mapperTeams,
 function(req, res) {
-      req.models = req.models || {};
-      let id = req.params.idL;
-      let league = getLeague(id);
       teams = req.models.teams;
-      putIdTeams(id);
-      for (let i = 0; i < teams.length; ++i) {
-            teams[i]["idL"] = id;
-      }
-      res.render('leaguesView/teams', { title: 'Teams info', league: league, teams: teams });
+
+      res.render('leaguesView/teams', { title: 'Teams info', league: getLeague(req.params.idL), teams: teams });
 });
 
 router.get('/leagues/:idL/teams/:idT/players', reqParser.urlParser, reqAPI.requestAPI, reqMapper.mapperPlayers,
     reqDBParser.requestDB, reqDBParser.requestFavoritesName,
 function(req, res) {
-      req.models = req.models || {};
       let id = req.params.idT;
-      let team = {};
       let favoriteNames = req.models.favoriteNames;
       putIdTeams(req.params.idL);
       let isFav = false;
-      for (let i = 0; i < teams.length; ++i) {
-            if(teams[i]["id"] == id) {
-                  team = teams[i];
-                  break;
-            }
-      }
+      let team = getTeam(id);
+
       if (teams.length === 0) {
             for (let i = 0; i < favoriteNames.length; ++i) {
                   let arr = favoriteNames[i]["dbObj"]["teams"];
@@ -62,6 +50,7 @@ function(req, res) {
                         }
             }
       }
+
       for (let i = 0; i < favoriteNames.length; ++i) {
             let arr = favoriteNames[i]["dbObj"]["teams"];
             if (Array.isArray(arr))
@@ -75,6 +64,7 @@ function(req, res) {
                   break;
             }
       }
+
       let favs = [];
       for (let i = 0; i < favoriteNames.length; ++i) {
             let arr = favoriteNames[i]["dbObj"]["teams"];
@@ -90,63 +80,52 @@ function(req, res) {
                   }
             }
       }
+
       if (favs.length > 0) {
             favoriteNames = favs;
       }
+
       res.render('leaguesView/players', { title: 'Players info', team: team, players: req.models.players, favoriteNames: favoriteNames, isFav: isFav });
 });
 
 router.get('/leagues/:idL/teams/:idT/teamFixtures', reqParser.urlParser, reqAPI.requestAPI, reqMapper.mapperFixtures,
     function(req, res) {
-          req.models = req.models || {};
-          let id = req.params.idT;
-          let team = {};
-          for (let i = 0; i < teams.length; ++i) {
-                if(teams[i]["id"] == id) {
-                      team = teams[i];
-                      break;
-                }
-          }
-          res.render('leaguesView/fixtures', { title: 'Team fixtures', team: team, fixtures: req.models.fixtures });
+
+          res.render('leaguesView/fixtures', { title: 'Team fixtures', team: getTeam(req.params.idT), fixtures: req.models.fixtures });
     });
 
 router.get('/leagues/:idL/fixtures', reqParser.urlParser, reqAPI.requestAPI, reqMapper.mapperFixtures,
 function(req, res) {
-      req.models = req.models || {};
-      let id = req.params.idL;
-      let league = getLeague(id);
-      let fixtures = req.models.fixtures;
-      for (let i = 0; i < fixtures.length; ++i) {
-            fixtures[i]["idL"] = id;
-      }
-      res.render('leaguesView/fixtures', { title: 'Fixtures info', league: league, fixtures: fixtures });
+
+      res.render('leaguesView/fixtures', { title: 'Fixtures info', league: getLeague(req.params.idL), fixtures: req.models.fixtures });
 });
 
 router.get('/leagues/:idL/leagueTables', reqParser.urlParser, reqAPI.requestAPI, reqMapper.mapperLeagueTables,
 function(req, res) {
-      req.models = req.models || {};
-      let id = req.params.idL;
-      let league = getLeague(id);
-      let leagueTables = req.models.leagueTables;
-      for (let i = 0; i < leagueTables.length; ++i) {
-            leagueTables[i]["idL"] = id;
-      }
-      res.render('leaguesView/leagueTables', { title: 'Table info', league: league, leagueTables: leagueTables });
+
+      res.render('leaguesView/leagueTables', { title: 'Table info', league: getLeague(req.params.idL), leagueTables: req.models.leagueTables });
 });
 
 function putIdTeams(id) {
-      teams.map((team) => {
+      teams.map(function(team) {
             team["idL"] = id;
       });
 }
 
 function getLeague(id) {
-      let leagueView = {};
-      leagues.forEach((league) => {
-            if (league["id"] == id)
-            leagueView = league;
+      let leagueView = leagues.find(function(l) {
+            if (l["id"] == id)
+                  return l;
       });
       return leagueView;
+}
+
+function getTeam(id) {
+      let team = teams.find(function(t) {
+            if (t["id"] == id)
+                  return t;
+      });
+      return team;
 }
 
 module.exports = router;

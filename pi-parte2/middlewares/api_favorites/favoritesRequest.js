@@ -21,14 +21,13 @@ function requestAPIFavorites(req, res, next) {
             headers: API_KEY },
         function(err, resp, body) {
             if (!err && resp["statusCode"] == 200) {
-                let obj = JSON.parse(body);
+                JSON.parse(body)
                 let result = [];
-                result.push(obj);
-                req.models = req.models || {};
+                result.push(JSON.parse(body));
                 req.models.resapi = result;
                 return next();
             } else {
-                console.log(err.message);
+                return next(err);
             }
         });
 };

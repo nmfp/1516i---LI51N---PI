@@ -1,27 +1,25 @@
 
-<!-- Main jumbotron for a primary marketing message or call to action -->
-<div class="jumbotron">
-    <div class="container">
-        <h1>{{team.name}}</h1>
-        <p><a href="/football-data/leagues/{{team.idL}}/teams/{{team.id}}/teamFixtures">Fixtures</a></p>
+    <div class="jumbotron">
+        <div class="container">
+            <h1>{{team.name}}</h1>
+            <p><a href="/football-data/leagues/{{team.idL}}/teams/{{team.id}}/teamFixtures">Fixtures</a></p>
 
-        <form action = "/favorites/insertTeam" method="post">
-            <input name = "idL" value="{{team.idL}}" style="display:none" />
-            <input name = "idT" value="{{team.id}}" style="display:none" />
-            <select name = "favoriteName">
-                {{#each favoriteNames}}
-                    <option value="{{name}}">{{name}}</option>
-                {{/each}}
-            </select>
-            <button type = "submit" class = "btn btn-primary">Add team to your favorites</button>
-        </form>
+            <form action = "/favorites/insertTeam" method="post">
+                <input name = "idL" value="{{team.idL}}" style="display:none" />
+                <input name = "idT" value="{{team.id}}" style="display:none" />
+                <select name = "favoriteName">
+                    {{#each favoriteNames}}
+                        <option value="{{name}}">{{name}}</option>
+                    {{/each}}
+                </select>
+                <button type = "submit" class = "btn btn-primary">Add team to your favorites</button>
+            </form>
 
+        </div>
     </div>
-</div>
 
-<div class="container">
     <div class="row">
-{{#each players}}
+    {{#each players}}
         <div class="col-sm-6 col-md-4">
             <div class="thumbnail">
                 <img src="/images/noPhoto.jpeg" width="100" height="100">
@@ -36,9 +34,5 @@
                 </div>
             </div>
         </div>
-{{/each}}
-</div>
-
-    <hr>
-
-</div> <!-- /container -->
+    {{/each}}
+    </div>

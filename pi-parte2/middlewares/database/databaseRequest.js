@@ -20,7 +20,7 @@ function requestDB(req, res, next) {
 
             return next();
         } else if (err) {
-            console.log(err.message);
+            return next(err);
         }
     });
 };
@@ -33,7 +33,7 @@ function teamsOfGroups (req, res, next) {
     let result = [];
     couchdb.get(database, viewName, null, function (err, resData){
         if (err)
-            console.log(err.message);
+            return next(err);
 
         result = resData.data.rows;
 
@@ -67,7 +67,7 @@ function reqTeamsGroup(req, res, next) {
                     if (i++ == group.length - 1)
                         mapper(req, result, resultLeagues, next);
                 } else if (err) {
-                    console.log(err.message);
+                    return next(err);
                 }
             });
     });
@@ -87,7 +87,7 @@ function requestDBGroups(req, res, next) {
 
             return next();
         } else if (err) {
-            console.log(err.message);
+            return next(err);
         }
     });
 };
@@ -112,7 +112,7 @@ function requestNameGroup(req, res, next) {
                         return next();
                     }
                 } else if (err) {
-                    console.log(err.message);
+                    return next(err);
                 }
             });
     });
@@ -135,7 +135,7 @@ function requestTeamDB(req, res, next) {
                         reqTeams(result, next, req);
                     }
                 } else if (err) {
-                    console.log(err.message);
+                    return next(err);
                 }
             });
     });
@@ -159,7 +159,7 @@ function reqTeams(favTeams, next, req) {
                     if (i++ == favTeams.length - 1)
                         mapper(req, result, resultLeagues, next);
                 } else if (err) {
-                    console.log(err.message);
+                    return next(err);
                 }
             });
     });
@@ -190,7 +190,7 @@ function requestFavoritesName(req, res, next) {
                         return next();
                     }
                 } else if (err) {
-                    console.log(err.message);
+                    return next(err);
                 }
             });
     });

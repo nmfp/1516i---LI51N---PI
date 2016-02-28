@@ -10,17 +10,28 @@ const db_url = "http://localhost:5984/"+db_name;
 const request = require('request');
 const passport = require('passport');
 
-request(
-    {uri: db_url, method: 'PUT'},
-    function (err, response, body) {
+router.get('/pingdb',
+    function(req, res, next) {
+    request(
+        {uri: db_url, method: 'GET'},
+        function (err, response, body) {
         if (err)
-            throw err;
-        if (response.statusCode === 201)
-            console.log(body);
-        if (response.statusCode !== 201)
-            console.log(body);
-    }
-);
+            return next(err);
+        if (response.statusCode !== 201){
+            request(
+                {uri: db_url, method: 'PUT'},
+                function (err, response, body) {
+                    if (err)
+                        return next(err);
+                    if (response.statusCode === 200)
+                        console.log(db_name+" is up!");
+                }
+            );
+        }
+        }
+    );
+});
+
 
 router.get('/login', function(req, res) {
 

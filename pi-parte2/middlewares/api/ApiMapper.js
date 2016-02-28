@@ -11,15 +11,14 @@ function mapperLeagues(req, res, next) {
     req.models = req.models || {};
     let arr = req.models.resapi[0];
 
-    let leagues = [];
-    for (let i = 0; i < arr.length; ++i) {
+    let leagues = arr.map(function(obj) {
+        let props = Object.keys(leagueObj);
         let league = {};
-        let obj = arr[i];
-        for (let prop in leagueObj) {
+        props.forEach(function (prop) {
             league[prop] = obj[prop];
-        }
-        leagues.push(league);
-    }
+        });
+        return league;
+    });
 
     req.models.leagues = leagues;
     return next();
@@ -29,20 +28,19 @@ function mapperTeams(req, res, next) {
     req.models = req.models || {};
     let arr = req.models.resapi[0]["teams"];
 
-    let teams = [];
-    for (let i = 0; i < arr.length; ++i) {
+    let teams = arr.map(function(obj) {
+        let props = Object.keys(teamObj);
         let team = {};
-        let obj = arr[i];
-        for (let prop in teamObj) {
+        props.forEach(function (prop) {
             if (prop == "_links") {
                 let idParser = obj[prop]["self"]["href"];
                 let id = getIdParser(idParser); //394
                 team["id"] = id;
             }
             team[prop] = obj[prop];
-        }
-        teams.push(team);
-    }
+        });
+        return team;
+    });
 
     req.models.teams = teams;
     return next();
@@ -52,15 +50,14 @@ function mapperPlayers(req, res, next) {
     req.models = req.models || {};
     let arr = req.models.resapi[0]["players"];
 
-    let players = [];
-    for (let i = 0; i < arr.length; ++i) {
+    let players = arr.map(function(obj) {
+        let props = Object.keys(playerObj);
         let player = {};
-        let obj = arr[i];
-        for (let prop in playerObj) {
+        props.forEach(function (prop) {
             player[prop] = obj[prop];
-        }
-        players.push(player);
-    }
+        });
+        return player;
+    });
 
     req.models.players = players;
     return next();
@@ -70,16 +67,15 @@ function mapperFixtures(req, res, next) {
     req.models = req.models || {};
     let arr = req.models.resapi[0]["fixtures"];
 
-    let fixtures = [];
-    for (let i = 0; i < arr.length; ++i) {
+    let fixtures = arr.map(function(obj) {
+        let props = Object.keys(fixturesObj);
         let fixture = {};
-        let obj = arr[i];
-        for (let prop in fixturesObj) {
+        props.forEach(function (prop) {
             if (prop == "date") {
                 let dateParser = obj[prop];
                 let date = dateParser.substring(0, 10).trim(); //yyyy-mm-dd
                 fixture[prop] = date;
-                continue;
+                return;
             }
             if (prop == "_links") {
                 let idParserHome = obj[prop]["homeTeam"]["href"];
@@ -88,11 +84,12 @@ function mapperFixtures(req, res, next) {
                 let idParserAway = obj[prop]["awayTeam"]["href"];
                 let idA = getIdParser(idParserAway); //7
                 fixture["idA"] = idA;
+                return;
             }
             fixture[prop] = obj[prop];
-        }
-        fixtures.push(fixture);
-    }
+        });
+        return fixture;
+    });
 
     req.models.fixtures = fixtures;
     return next();
@@ -102,20 +99,19 @@ function mapperLeagueTables(req, res, next) {
     req.models = req.models || {};
     let arr = req.models.resapi[0]["standing"];
 
-    let leagueTables = [];
-    for (let i = 0; i < arr.length; ++i) {
+    let leagueTables = arr.map(function(obj) {
+        let props = Object.keys(leagueTableObj);
         let leagueTable = {};
-        let obj = arr[i];
-        for (let prop in leagueTableObj) {
+        props.forEach(function (prop) {
             if (prop == "_links") {
                 let idParserTeam = obj[prop]["team"]["href"];
                 let idT = getIdParser(idParserTeam); //5
                 leagueTable["idT"] = idT;
             }
             leagueTable[prop] = obj[prop];
-        }
-        leagueTables.push(leagueTable);
-    }
+        });
+        return leagueTable;
+    });
 
     req.models.leagueTables = leagueTables;
     return next();

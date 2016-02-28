@@ -1,14 +1,11 @@
 
-<!-- Main jumbotron for a primary marketing message or call to action -->
-<div class="jumbotron">
-    <div class="container">
-        <h1>{{league.caption}}</h1>
-        <p><b>Year</b>: {{league.year}}</p>
+    <div class="jumbotron">
+        <div class="container">
+            <h1>{{league.caption}}</h1>
+            <p><b>Year</b>: {{league.year}}</p>
+        </div>
     </div>
-</div>
 
-
-<div class="container">
     <div class="row">
         <div class="table-responsive">
             <table class="table table-bordered">
@@ -27,10 +24,10 @@
                     </tr>
                 </thead>
                 <tbody>
-{{#each leagueTables}}
+                {{#each leagueTables}}
                     <tr>
                         <th style="text-align: center">{{position}}</th>
-                        <td><img src="{{crestURI}}" width="40" height="40"> <a href="/football-data/leagues/{{idL}}/teams/{{idT}}/players">{{teamName}}</a></td>
+                        <td><img src="{{crestURI}}" width="40" height="40"> <a href="/football-data/leagues/{{../league.id}}/teams/{{idT}}/players">{{teamName}}</a></td>
                         <td style="text-align: center"><b>{{points}}</b></td>
                         <td style="text-align: center">{{playedGames}}</td>
                         <td style="text-align: center">{{wins}}</td>
@@ -40,12 +37,8 @@
                         <td style="text-align: center">{{goalsAgainst}}</td>
                         <td style="text-align: center">{{goalDifference}}</td>
                     </tr>
-{{/each}}
+                {{/each}}
                 </tbody>
             </table>
         </div>
     </div>
-
-    <hr>
-
-</div> <!-- /container -->
