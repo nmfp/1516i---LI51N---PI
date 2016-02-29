@@ -8,6 +8,7 @@
                 <input name = "idL" value="{{team.idL}}" style="display:none" />
                 <input name = "idT" value="{{team.id}}" style="display:none" />
                 <select name = "favoriteName">
+                    <option selected disabled hidden value=''></option>
                     {{#each favoriteNames}}
                         <option value="{{name}}">{{name}}</option>
                     {{/each}}

@@ -25,8 +25,8 @@ function(req, res) {
 router.get('/leagues/:idL/teams', reqParser.urlParser, reqAPI.requestAPI, reqMapper.mapperTeams,
 function(req, res) {
       teams = req.models.teams;
-
-      res.render('leaguesView/teams', { title: 'Teams info', league: getLeague(req.params.idL), teams: teams });
+      let league = getLeague(req.params.idL);
+      res.render('leaguesView/teams', { title: 'Teams info', league: league, teams: teams });
 });
 
 router.get('/leagues/:idL/teams/:idT/players', reqParser.urlParser, reqAPI.requestAPI, reqMapper.mapperPlayers,
@@ -91,7 +91,7 @@ function(req, res) {
 router.get('/leagues/:idL/teams/:idT/teamFixtures', reqParser.urlParser, reqAPI.requestAPI, reqMapper.mapperFixtures,
     function(req, res) {
 
-          res.render('leaguesView/fixtures', { title: 'Team fixtures', team: getTeam(req.params.idT), fixtures: req.models.fixtures });
+          res.render('leaguesView/fixtures', { title: 'Team fixtures', team: getTeam(req.params.idT), league: getLeague(req.params.idL), fixtures: req.models.fixtures });
     });
 
 router.get('/leagues/:idL/fixtures', reqParser.urlParser, reqAPI.requestAPI, reqMapper.mapperFixtures,
@@ -106,6 +106,7 @@ function(req, res) {
       res.render('leaguesView/leagueTables', { title: 'Table info', league: getLeague(req.params.idL), leagueTables: req.models.leagueTables });
 });
 
+//helper functions
 function putIdTeams(id) {
       teams.map(function(team) {
             team["idL"] = id;

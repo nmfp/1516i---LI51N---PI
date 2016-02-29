@@ -34,8 +34,27 @@ router.get('/pingdb',
                         function (err, response, body) {
                             if (err)
                                 return next(err);
-                            if (response.statusCode === 200)
+                            if (response.statusCode === 200) {
                                 console.log(db_name+" is up!");
+                                let dbView = {
+                                    "_id": "_design/formatDB",
+                                    "language": "javascript",
+                                    "views": {
+                                        "formatDB": {
+                                            "map": "function(doc) {\n  emit(doc.group, doc.teams);\n}"
+                                        }
+                                    }
+                                };
+                                request.post({
+                                    uri: db_url,
+                                    body: dbView,
+                                    json: true
+                                }, function(err, resp, body) {
+                                    if (err)
+                                        return next(err);
+                                    console.log("View is stored!");
+                                });
+                            }
                         }
                     );
                 }
@@ -128,9 +147,8 @@ router.get('/all', reqDBParser.requestDBGroups,reqDBParser.requestNameGroup,
 
 router.post('/changeT/:idL', reqFavorites.requestAPI, reqMapper.mapperTeams,
     function(req, res) {
-        let teams = req.models.teams;
 
-        res.send(teams);
+        res.send(req.models.teams);
 });
 
 router.post('/addT/:groupN/:idL/:idT', reqDBParser.requestDB, reqDBParser.requestFavoritesName, reqFavorites.requestAPI, reqMapper.mapperTeams,
@@ -139,7 +157,6 @@ router.post('/addT/:groupN/:idL/:idT', reqDBParser.requestDB, reqDBParser.reques
             "idL": req.params.idL,
             "idT": req.params.idT
         };
-        req.models = req.models || {};
 
         let dbObjs = req.models.favoriteNames;
         let groupObj = {};
@@ -178,7 +195,6 @@ router.get('/:idGroup/teams', reqDBParser.teamsOfGroups, reqDBParser.reqTeamsGro
     reqFavorites.requestAPI, reqMapper.mapperLeagues,
     function(req, res) {
 
-        req.models = req.models || {};
         let teams = req.models.teams;
         let groupName = req.params.idGroup;
         let leagues = req.models.favouritesLeagueTeams;
