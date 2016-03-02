@@ -11,7 +11,7 @@ function getOne(id, callback) {
 
     couchdb.get(db_name, viewName, null, function(err, resData) {
         if (err)
-            return next(err);
+            return callback(err);
 
         let result = resData.data.rows;
         result.forEach(function(user) {

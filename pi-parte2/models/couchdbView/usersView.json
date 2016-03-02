@@ -1,0 +1,10 @@
+
+{
+  "_id": "_design/usersview",
+  "language": "javascript",
+  "views": {
+    "userv": {
+      "map": "function(doc) {\n  emit(doc.id, doc.usernp);\n}"
+    }
+  }
+}

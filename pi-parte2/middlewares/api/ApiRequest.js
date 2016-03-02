@@ -8,14 +8,15 @@ function requestAPI(req, res, next) {
     request({url: req.models.urlReq,
             headers: API_KEY },
         function(err, resp, body) {
-            if (!err && resp["statusCode"] == 200) {
+            if (err) {
+                return next(err);
+            }
+            if (resp["statusCode"] == 200) {
                 req.models = req.models || {};
                 let result = [];
                 result.push(JSON.parse(body));
                 req.models.resapi = result;
                 return next();
-            } else if (err) {
-                return next(err);
             }
         });
 };

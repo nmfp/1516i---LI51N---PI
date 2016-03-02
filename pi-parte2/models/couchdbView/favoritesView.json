@@ -1,0 +1,10 @@
+
+{
+  "_id": "_design/formatDB",
+  "language": "javascript",
+  "views": {
+    "formatDB": {
+      "map": "function(doc) {\n  emit(doc.group, doc.teams);\n}"
+    }
+  }
+}

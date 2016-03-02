@@ -6,6 +6,7 @@ const router = express.Router();
 
 const reqDBMapper = require('../middlewares/database/databaseMapper');
 const reqDBParser = require('../middlewares/database/databaseRequest');
+const reqPingDB = require('../middlewares/database/pingdb');
 
 const reqFavorites = require('../middlewares/api_favorites/favoritesRequest');
 
@@ -21,46 +22,8 @@ const db_name = "footballdata";
 const db_url = "http://localhost:5984/"+db_name;
 
 //create database
-router.get('/pingdb',
-    function(req, res, next) {
-        request(
-            {uri: db_url, method: 'GET'},
-            function (err, response, body) {
-                if (err)
-                    throw err;
-                if (response.statusCode !== 201){
-                    request(
-                        {uri: db_url, method: 'PUT'},
-                        function (err, response, body) {
-                            if (err)
-                                return next(err);
-                            if (response.statusCode === 200) {
-                                console.log(db_name+" is up!");
-                                let dbView = {
-                                    "_id": "_design/formatDB",
-                                    "language": "javascript",
-                                    "views": {
-                                        "formatDB": {
-                                            "map": "function(doc) {\n  emit(doc.group, doc.teams);\n}"
-                                        }
-                                    }
-                                };
-                                request.post({
-                                    uri: db_url,
-                                    body: dbView,
-                                    json: true
-                                }, function(err, resp, body) {
-                                    if (err)
-                                        return next(err);
-                                    console.log("View is stored!");
-                                });
-                            }
-                        }
-                    );
-                }
-            }
-        );
-    });
+router.get('/pingdb', reqPingDB.checkDatabase, reqPingDB.createDatabase, reqPingDB.createView,
+    function(req, res) {  });
 
 router.post('/insertGroup',function(req, res, next) {
     let group = {
@@ -89,13 +52,17 @@ router.post('/insertTeam', reqDBParser.requestDB, reqDBParser.requestFavoritesNa
         req.models = req.models || {};
 
         let dbObjs = req.models.favoriteNames;
-        let groupObj = {};
-        for (let i = 0; i < dbObjs.length; ++i) {
-            if (dbObjs[i]["name"] == req.body.favoriteName) {
-                groupObj = dbObjs[i];
-                break;
-            }
-        }
+        //let groupObj = {};
+        //for (let i = 0; i < dbObjs.length; ++i) {
+        //    if (dbObjs[i]["name"] == req.body.favoriteName) {
+        //        groupObj = dbObjs[i];
+        //        break;
+        //    }
+        //}
+        let groupObj = dbObjs.find(function (dbo) {
+            if (dbo["name"] == req.body.favoriteName)
+                return dbo;
+        });
 
         groupObj["dbObj"]["teams"].push(favoriteTeam);
         let header = {
@@ -118,13 +85,17 @@ router.post('/deleteGroup', reqDBParser.requestDB, reqDBParser.requestFavoritesN
         req.models = req.models || {};
 
         let dbObjs = req.models.favoriteNames;
-        let groupObj = {};
-        for (let i = 0; i < dbObjs.length; ++i) {
-            if (dbObjs[i]["name"] == req.body.favoriteName) {
-                groupObj = dbObjs[i];
-                break;
-            }
-        }
+        //let groupObj = {};
+        //for (let i = 0; i < dbObjs.length; ++i) {
+        //    if (dbObjs[i]["name"] == req.body.favoriteName) {
+        //        groupObj = dbObjs[i];
+        //        break;
+        //    }
+        //}
+        let groupObj = dbObjs.find(function (dbo) {
+            if (dbo["name"] == req.body.favoriteName)
+                return dbo;
+        });
 
         let id = groupObj["dbObj"]["_id"];
         let rev = groupObj["dbObj"]["_rev"];
@@ -159,13 +130,17 @@ router.post('/addT/:groupN/:idL/:idT', reqDBParser.requestDB, reqDBParser.reques
         };
 
         let dbObjs = req.models.favoriteNames;
-        let groupObj = {};
-        for (let i = 0; i < dbObjs.length; ++i) {
-            if (dbObjs[i]["name"] == req.params.groupN) {
-                groupObj = dbObjs[i];
-                break;
-            }
-        }
+        //let groupObj = {};
+        //for (let i = 0; i < dbObjs.length; ++i) {
+        //    if (dbObjs[i]["name"] == req.params.groupN) {
+        //        groupObj = dbObjs[i];
+        //        break;
+        //    }
+        //}
+        let groupObj = dbObjs.find(function(dbo) {
+            if (dbo["name"] == req.params.groupN)
+                return dbo;
+        });
 
         groupObj["dbObj"]["teams"].push(favoriteTeam);
         let header = {
@@ -181,13 +156,17 @@ router.post('/addT/:groupN/:idL/:idT', reqDBParser.requestDB, reqDBParser.reques
         });
         let teams = req.models.teams;
         let idT = req.params.idT;
-        let team = {};
-        for (let i = 0; i < teams.length; ++i) {
-            if (teams[i]["id"] === idT) {
-                team = teams[i];
-                break;
-            }
-        }
+        //let team = {};
+        //for (let i = 0; i < teams.length; ++i) {
+        //    if (teams[i]["id"] === idT) {
+        //        team = teams[i];
+        //        break;
+        //    }
+        //}
+        let team = teams.find(function(t) {
+            if (t["id"] == idT)
+                return t;
+        });
         res.send(team);
     });
 
@@ -211,6 +190,35 @@ router.get('/:idGroup/teams', reqDBParser.teamsOfGroups, reqDBParser.reqTeamsGro
         }
 
         res.render('favoritesView/favoritesTeams', { groupName: groupName, leagues:leagues, teams: teams, leaguesA: leaguesAll, control: control });
+    });
+
+    router.get('/nextFixtures', function(req, res){
+        let fixtures = req.models.fixtures;
+        let nDays = req.query.ndays;
+        let to = req.query.to; // up or down
+
+        let current_date = new Date();
+        let to_date = new Date();
+        if (to == 'up') {
+            to_date.setDate(current_date.getDate() + nDays);
+        } else {
+            to_date.setDate(current_date.getDate() - nDays);
+        }
+
+        //let format_date = to_date.toJSON().substring(0, 10).trim();
+
+        let filtered_dates = fixtures.filter(function(fixture) {
+            let form_date = fixture["date"];
+            if (to == 'up' && form_date > current_date && form_date < to_date)
+                return true;
+            if (to == 'down' && form_date > to_date && form_date < current_date)
+                return true;
+            return false;
+        });
+    });
+
+    router.get('/nextFixtures/:idL/:idT', function(req, res){
+
     });
 
 module.exports = router;

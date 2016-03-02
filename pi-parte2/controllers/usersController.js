@@ -4,7 +4,8 @@
 const db_name = "userlogin";
 const db_url = "http://localhost:5984/"+db_name;
 
-const userHandler = require('./middlewares/users/usersHandler');
+const userHandler = require('../middlewares/users/usersHandler');
+const reqPingDB = require('../middlewares/database/pingdb');
 
 const request = require('request');
 const passport = require('passport');
@@ -49,40 +50,23 @@ module.exports = function(app) {
         next();
     });
 
-    //TODO melhorar
-    app.get('/user/pingdb',
-        function(req, res, next) {
-            request(
-                {uri: db_url, method: 'GET'},
-                function (err, response, body) {
-                    if (err)
-                        return next(err);
-                    if (response.statusCode !== 201){
-                        request(
-                            {uri: db_url, method: 'PUT'},
-                            function (err, response, body) {
-                                if (err)
-                                    return next(err);
-                                if (response.statusCode === 200)
-                                    console.log(db_name+" is up!");
-                            }
-                        );
-                    }
-                }
-            );
-        });
+
 
     app.get('/user/login', function(req, res) {
         return res.render('usersView/page')
     });
 
-    app.post('/login', passport.authenticate('local', { successRedirect: '/',
+    app.post('/user/login', passport.authenticate('local', { successRedirect: '/',
         failureRedirect: '/login',
         failureFlash: true }));
 
-    app.get('/logout', function(req, res) {
+    app.get('/user/logout', function(req, res) {
         req.logout();
         res.redirect('/');
     });
+
+    app.get('/user/pingdb', reqPingDB.checkDatabase, reqPingDB.createDatabase, reqPingDB.createView,
+    function(req, res) {  });
+
 */
 };

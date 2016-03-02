@@ -25,8 +25,8 @@ function(req, res) {
 router.get('/leagues/:idL/teams', reqParser.urlParser, reqAPI.requestAPI, reqMapper.mapperTeams,
 function(req, res) {
       teams = req.models.teams;
-      let league = getLeague(req.params.idL);
-      res.render('leaguesView/teams', { title: 'Teams info', league: league, teams: teams });
+
+      res.render('leaguesView/teams', { title: 'Teams info', league: getLeague(req.params.idL), teams: teams });
 });
 
 router.get('/leagues/:idL/teams/:idT/players', reqParser.urlParser, reqAPI.requestAPI, reqMapper.mapperPlayers,
@@ -34,11 +34,11 @@ router.get('/leagues/:idL/teams/:idT/players', reqParser.urlParser, reqAPI.reque
 function(req, res) {
       let id = req.params.idT;
       let favoriteNames = req.models.favoriteNames;
-      putIdTeams(req.params.idL);
+      let teamsWithId = putIdTeams(req.params.idL);
       let isFav = false;
       let team = getTeam(id);
 
-      if (teams.length === 0) {
+      if (teamsWithId.length === 0) {
             for (let i = 0; i < favoriteNames.length; ++i) {
                   let arr = favoriteNames[i]["dbObj"]["teams"];
                   if (Array.isArray(arr))
@@ -108,9 +108,10 @@ function(req, res) {
 
 //helper functions
 function putIdTeams(id) {
-      teams.map(function(team) {
+      let res = teams.map(function (team) {
             team["idL"] = id;
       });
+      return res;
 }
 
 function getLeague(id) {

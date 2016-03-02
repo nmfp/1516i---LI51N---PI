@@ -13,14 +13,15 @@ function requestDB(req, res, next) {
         url: db_url+"/_all_docs",
         json: true
     }, function (err, resp, body) {
-        if (!err && resp["statusCode"] == 200) {
+        if (err) {
+            return next(err);
+        }
+        if (resp["statusCode"] == 200) {
             let teamsID = body.rows;
             req.models = req.models || {};
             req.models.favoritesTeams = teamsID;
 
             return next();
-        } else if (err) {
-            return next(err);
         }
     });
 };
@@ -61,13 +62,14 @@ function reqTeamsGroup(req, res, next) {
                 headers: API_KEY
             },
             function (err, resp, body) {
-                if (!err && resp["statusCode"] == 200) {
+                if (err) {
+                    return next(err);
+                }
+                if (resp["statusCode"] == 200) {
                     let obj = JSON.parse(body);
                     result.push(obj);
                     if (i++ == group.length - 1)
                         mapper(req, result, resultLeagues, next);
-                } else if (err) {
-                    return next(err);
                 }
             });
     });
@@ -80,14 +82,15 @@ function requestDBGroups(req, res, next) {
         url: db_url+"/_all_docs",
         json: true
     }, function (err, resp, body) {
-        if (!err && resp["statusCode"] == 200) {
+        if (err) {
+            return next(err);
+        }
+        if (resp["statusCode"] == 200) {
             let group = body.rows;
             req.models = req.models || {};
             req.models.groups = group;
 
             return next();
-        } else if (err) {
-            return next(err);
         }
     });
 };
@@ -100,7 +103,10 @@ function requestNameGroup(req, res, next) {
     dbId.forEach(function (group) {
         request(db_url+"/"+group["id"],
             function(err, resp, body) {
-                if (!err && resp["statusCode"] == 200) {
+                if (err) {
+                    return next(err);
+                }
+                if (resp["statusCode"] == 200) {
                     let obj = JSON.parse(body);
                     if (obj["teams"] !== undefined)
                         result.push(obj);
@@ -111,8 +117,6 @@ function requestNameGroup(req, res, next) {
                         req.models.groupsName = result;
                         return next();
                     }
-                } else if (err) {
-                    return next(err);
                 }
             });
     });
@@ -127,15 +131,16 @@ function requestTeamDB(req, res, next) {
     dbId.forEach(function (teamid) {
         request(db_url+"/"+teamid["id"],
             function(err, resp, body) {
-                if (!err && resp["statusCode"] == 200) {
+                if (err) {
+                    return next(err);
+                }
+                if (resp["statusCode"] == 200) {
                     let obj = JSON.parse(body);
                     result.push(obj);
 
                     if (i++ == dbId.length - 1 ) {
                         reqTeams(result, next, req);
                     }
-                } else if (err) {
-                    return next(err);
                 }
             });
     });
@@ -153,13 +158,14 @@ function reqTeams(favTeams, next, req) {
                 headers: API_KEY
             },
             function (err, resp, body) {
-                if (!err && resp["statusCode"] == 200) {
+                if (err) {
+                    return next(err);
+                }
+                if (resp["statusCode"] == 200) {
                     let obj = JSON.parse(body);
                     result.push(obj);
                     if (i++ == favTeams.length - 1)
                         mapper(req, result, resultLeagues, next);
-                } else if (err) {
-                    return next(err);
                 }
             });
     });
@@ -181,7 +187,10 @@ function requestFavoritesName(req, res, next) {
     dbId.forEach(function (favorite) {
         request(db_url+"/"+favorite["id"],
             function(err, resp, body) {
-                if (!err && resp["statusCode"] == 200) {
+                if (err) {
+                    return next(err);
+                }
+                if (resp["statusCode"] == 200) {
                     let obj = JSON.parse(body);
                     result.push({"name": obj["group"], "dbObj": obj});
 
@@ -189,8 +198,6 @@ function requestFavoritesName(req, res, next) {
                         req.models.favoriteNames = result;
                         return next();
                     }
-                } else if (err) {
-                    return next(err);
                 }
             });
     });
