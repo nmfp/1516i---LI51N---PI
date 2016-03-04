@@ -14,7 +14,7 @@ function changeTeams() {
             let select = document.createElement("select");
             select.setAttribute("id", "addT");
             select.setAttribute("onchange", "addTfav()");
-            let opt = document.createElement("option")
+            let opt = document.createElement("option");
             opt.setAttribute("selected", "");
             opt.setAttribute("disabled", "");
             opt.setAttribute("hidden", "");

@@ -9,7 +9,11 @@ const leagueTableObj = require('../../models/templates/leagueTableObj.json');
 
 function mapperLeagues(req, res, next) {
     req.models = req.models || {};
-    let arr = req.models.resapi[0];
+    let idx = 0;
+    if (req.models.resapiFav != undefined && req.models.resapiFav == true) {
+        idx = 1;
+    }
+    let arr = req.models.resapi[idx];
 
     let leagues = arr.map(function(obj) {
         let props = Object.keys(leagueObj);

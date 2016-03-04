@@ -24,9 +24,8 @@ function addTfav() {
             let id = makeID();
             h.setAttribute("id", id);
             let a = document.createElement("a");
-            a.setAttribute("href", "/football-data/leagues/"+league+"/teams/"+teamID+"/players");
+            a.setAttribute("href", "/favorites/fixtures/"+league+"/"+teamID+"/"+team["shortName"]+"/"+group);
             a.innerText = team["name"];
-
 
             let p1 = document.createElement("p");
             p1.innerText = "Short name: "+team["shortName"];

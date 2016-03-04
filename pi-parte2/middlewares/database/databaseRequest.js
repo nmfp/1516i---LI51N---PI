@@ -89,16 +89,19 @@ function requestDBGroups(req, res, next) {
             let group = body.rows;
             req.models = req.models || {};
             req.models.groups = group;
-
-            return next();
         }
+        return next();
     });
 };
 
 function requestNameGroup(req, res, next) {
+    req.models = req.models || {};
     let dbId = req.models.groups;
     let i = 0;
     let result = [];
+
+    if (dbId == undefined || dbId.length == 0)
+        return next();
 
     dbId.forEach(function (group) {
         request(db_url+"/"+group["id"],
@@ -120,8 +123,7 @@ function requestNameGroup(req, res, next) {
                 }
             });
     });
-    if (dbId.length == 0)
-        return next();
+
 };
 
 function requestTeamDB(req, res, next) {

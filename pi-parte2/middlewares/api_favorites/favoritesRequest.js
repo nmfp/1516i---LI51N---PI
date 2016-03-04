@@ -29,11 +29,54 @@ function requestAPIFavorites(req, res, next) {
                 let result = [];
                 result.push(JSON.parse(body));
                 req.models.resapi = result;
-                return next();
             }
+            return next();
         });
 };
 
+function requestAPIFixtures(req, res, next) {
+    req.models = req.models || {};
+
+    let idT = req.query.idT;
+    const reqURL = "http://api.football-data.org/v1/teams/{idT}/fixtures";
+
+    request({url: reqURL.replace("{idT}", idT),
+            headers: API_KEY },
+        function(err, resp, body) {
+            if (err) {
+                return next(err);
+            }
+            if (resp["statusCode"] == 200) {
+                let result = [];
+                result.push(JSON.parse(body));
+                req.models.resapi = result;
+            }
+            return next();
+        });
+};
+
+function requestAPILeagues(req, res, next) {
+    req.models = req.models || {};
+
+    const reqURL = "http://api.football-data.org/v1/soccerseasons";
+
+    request({url: reqURL,
+            headers: API_KEY },
+        function(err, resp, body) {
+            if (err) {
+                return next(err);
+            }
+            if (resp["statusCode"] == 200) {
+                req.models.resapi.push(JSON.parse(body));
+                req.models.resapiFav = true;
+            }
+            return next();
+        });
+};
+
+
 module.exports = {
-    requestAPI: requestAPIFavorites
+    requestAPI: requestAPIFavorites,
+    requestAPIFixtures: requestAPIFixtures,
+    requestAPILeagues: requestAPILeagues
 };

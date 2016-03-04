@@ -1,11 +1,13 @@
 
 'use strict';
+
+const reqPingDB = require('../middlewares/database/pingdb');
 /*
 const db_name = "userlogin";
 const db_url = "http://localhost:5984/"+db_name;
 
 const userHandler = require('../middlewares/users/usersHandler');
-const reqPingDB = require('../middlewares/database/pingdb');
+
 
 const request = require('request');
 const passport = require('passport');
@@ -64,9 +66,9 @@ module.exports = function(app) {
         req.logout();
         res.redirect('/');
     });
-
+ */
     app.get('/user/pingdb', reqPingDB.checkDatabase, reqPingDB.createDatabase, reqPingDB.createView,
     function(req, res) {  });
 
-*/
+
 };

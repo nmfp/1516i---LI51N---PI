@@ -52,13 +52,6 @@ router.post('/insertTeam', reqDBParser.requestDB, reqDBParser.requestFavoritesNa
         req.models = req.models || {};
 
         let dbObjs = req.models.favoriteNames;
-        //let groupObj = {};
-        //for (let i = 0; i < dbObjs.length; ++i) {
-        //    if (dbObjs[i]["name"] == req.body.favoriteName) {
-        //        groupObj = dbObjs[i];
-        //        break;
-        //    }
-        //}
         let groupObj = dbObjs.find(function (dbo) {
             if (dbo["name"] == req.body.favoriteName)
                 return dbo;
@@ -85,13 +78,6 @@ router.post('/deleteGroup', reqDBParser.requestDB, reqDBParser.requestFavoritesN
         req.models = req.models || {};
 
         let dbObjs = req.models.favoriteNames;
-        //let groupObj = {};
-        //for (let i = 0; i < dbObjs.length; ++i) {
-        //    if (dbObjs[i]["name"] == req.body.favoriteName) {
-        //        groupObj = dbObjs[i];
-        //        break;
-        //    }
-        //}
         let groupObj = dbObjs.find(function (dbo) {
             if (dbo["name"] == req.body.favoriteName)
                 return dbo;
@@ -130,13 +116,6 @@ router.post('/addT/:groupN/:idL/:idT', reqDBParser.requestDB, reqDBParser.reques
         };
 
         let dbObjs = req.models.favoriteNames;
-        //let groupObj = {};
-        //for (let i = 0; i < dbObjs.length; ++i) {
-        //    if (dbObjs[i]["name"] == req.params.groupN) {
-        //        groupObj = dbObjs[i];
-        //        break;
-        //    }
-        //}
         let groupObj = dbObjs.find(function(dbo) {
             if (dbo["name"] == req.params.groupN)
                 return dbo;
@@ -150,24 +129,19 @@ router.post('/addT/:groupN/:idL/:idT', reqDBParser.requestDB, reqDBParser.reques
             teams: groupObj["dbObj"]["teams"]
         };
 
-        couchdb.update("db_name", header, function(err, resData) {
+        couchdb.update(db_name, header, function(err, resData) {
             if (err)
                 return next(err);
+
+            let teams = req.models.teams;
+            let idT = req.params.idT;
+            let team = teams.find(function(t) {
+                if (t["id"] == idT)
+                    return t;
+            });
+
+            res.send(team);
         });
-        let teams = req.models.teams;
-        let idT = req.params.idT;
-        //let team = {};
-        //for (let i = 0; i < teams.length; ++i) {
-        //    if (teams[i]["id"] === idT) {
-        //        team = teams[i];
-        //        break;
-        //    }
-        //}
-        let team = teams.find(function(t) {
-            if (t["id"] == idT)
-                return t;
-        });
-        res.send(team);
     });
 
 router.get('/:idGroup/teams', reqDBParser.teamsOfGroups, reqDBParser.reqTeamsGroup, reqDBMapper.mapperTeamsFav,
@@ -192,33 +166,79 @@ router.get('/:idGroup/teams', reqDBParser.teamsOfGroups, reqDBParser.reqTeamsGro
         res.render('favoritesView/favoritesTeams', { groupName: groupName, leagues:leagues, teams: teams, leaguesA: leaguesAll, control: control });
     });
 
-    router.get('/nextFixtures', function(req, res){
-        let fixtures = req.models.fixtures;
-        let nDays = req.query.ndays;
-        let to = req.query.to; // up or down
+router.get('/nextFixtures', reqFavorites.requestAPIFixtures, reqMapper.mapperFixtures,
+    reqFavorites.requestAPILeagues, reqMapper.mapperLeagues,  function(req, res){
 
-        let current_date = new Date();
-        let to_date = new Date();
-        if (to == 'up') {
-            to_date.setDate(current_date.getDate() + nDays);
-        } else {
-            to_date.setDate(current_date.getDate() - nDays);
+    let fixtures = req.models.fixtures;
+    let nDays = (req.query.ndays)*1;
+    let to = req.query.to; // up or down
+
+    let current_date = new Date();
+    let to_date = new Date();
+    if (to == 'up') {
+        to_date.setDate(current_date.getDate() + nDays);
+    } else {
+        to_date.setDate(current_date.getDate() - nDays);
+    }
+
+    let filtered_dates = fixtures.filter(function(fixture) {
+        let form_date = new Date(fixture["date"]);
+        if (to == 'up' && form_date > current_date && form_date < to_date)
+            return true;
+        if (to == 'down' && form_date > to_date && form_date < current_date)
+            return true;
+        return false;
+    });
+
+    let league = req.models.leagues.find(function(l) {
+        if (l["id"] == req.query.idL)
+            return l;
+    });
+    res.render('leaguesView/fixtures', { fixtures: filtered_dates, league: league } );
+});
+
+router.get('/fixtures/:idL/:idT/:name/:groupName', function(req, res){
+    res.render('favoritesView/queryFixtures',
+        { idL: req.params.idL, idT: req.params.idT, name: req.params.name, groupName: req.params.groupName } );
+});
+
+router.post('/deleteTeam', reqDBParser.requestDB, reqDBParser.requestFavoritesName,
+    function(req, res) {
+
+        if (req.body.ans == "N") {
+            return res.redirect("/favorites/"+req.body.groupName+"/teams");
+        } else if (req.body.ans == "Y") {
+            let favoriteTeam = {
+                "idL": req.body.idL,
+                "idT": req.body.idT
+            };
+            req.models = req.models || {};
+
+            let dbObjs = req.models.favoriteNames;
+            let groupObj = dbObjs.find(function (dbo) {
+                if (dbo["name"] == req.body.groupName)
+                    return dbo;
+            });
+            let newArr = groupObj["dbObj"]["teams"];
+
+            let header = {
+                _id: groupObj["dbObj"]["_id"],
+                _rev: groupObj["dbObj"]["_rev"],
+                group: groupObj["name"],
+                teams: newArr.filter(function(team) {
+                    if (!(favoriteTeam["idT"] == team["idT"]))
+                        return team;
+                })
+            };
+
+            couchdb.update(db_name, header, function(err, resData) {
+                if (err)
+                    return next(err);
+                res.redirect("/favorites/"+req.body.groupName+"/teams");
+            });
         }
 
-        //let format_date = to_date.toJSON().substring(0, 10).trim();
 
-        let filtered_dates = fixtures.filter(function(fixture) {
-            let form_date = fixture["date"];
-            if (to == 'up' && form_date > current_date && form_date < to_date)
-                return true;
-            if (to == 'down' && form_date > to_date && form_date < current_date)
-                return true;
-            return false;
-        });
-    });
-
-    router.get('/nextFixtures/:idL/:idT', function(req, res){
-
-    });
+});
 
 module.exports = router;
