@@ -4,25 +4,26 @@
 const couchdb = require('node-couchdb');
 
 const db_name = "userlogin";
-//const db_url = "http://localhost:5984/"+db_name;
+const viewName = "_design/usersview/_view/userv";
 
-function getOne(id, callback) {
-    let viewName = "_design/usersview/_view/userv";
-
+function getOne(username, callback) {
     couchdb.get(db_name, viewName, null, function(err, resData) {
         if (err)
             return callback(err);
 
         let result = resData.data.rows;
-        result.forEach(function(user) {
-            if (user.key === id) {
-                callback(user);
+        let res = result.find(function(user) {
+            if (user.value.username === username) {
+                return user;
             }
         });
+        if (res == undefined) {
+            res = {};
+        }
+        callback(null, res.value);
     });
 };
 
 module.exports = {
     getOne: getOne
 };
-

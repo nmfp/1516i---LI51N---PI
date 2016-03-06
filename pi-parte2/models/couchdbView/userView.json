@@ -4,7 +4,7 @@
   "language": "javascript",
   "views": {
     "userv": {
-      "map": "function(doc) {\n  emit(doc.id, doc.usernp);\n}"
+      "map": "function(doc) {\n  emit(doc.user.username, doc.user);\n}"
     }
   }
 }

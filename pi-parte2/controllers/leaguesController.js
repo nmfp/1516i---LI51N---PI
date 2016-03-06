@@ -19,14 +19,14 @@ function(req, res) {
       leagues = req.models.leagues;
       let descr = "This page have the information of all leagues from 2015/16 football season!";
 
-      res.render('leaguesView/leagues', { title: 'Leagues info', description: descr, leagues: leagues });
+      res.render('leaguesView/leagues', { title: 'Leagues info', description: descr, leagues: leagues, user: req.user });
 });
 
 router.get('/leagues/:idL/teams', reqParser.urlParser, reqAPI.requestAPI, reqMapper.mapperTeams,
 function(req, res) {
       teams = req.models.teams;
 
-      res.render('leaguesView/teams', { title: 'Teams info', league: getLeague(req.params.idL), teams: teams });
+      res.render('leaguesView/teams', { title: 'Teams info', league: getLeague(req.params.idL), teams: teams, user: req.user });
 });
 
 router.get('/leagues/:idL/teams/:idT/players', reqParser.urlParser, reqAPI.requestAPI, reqMapper.mapperPlayers,
@@ -85,25 +85,29 @@ function(req, res) {
             favoriteNames = favs;
       }
 
-      res.render('leaguesView/players', { title: 'Players info', team: team, players: req.models.players, favoriteNames: favoriteNames, isFav: isFav });
+      res.render('leaguesView/players', { title: 'Players info', team: team, players: req.models.players,
+            favoriteNames: favoriteNames, isFav: isFav, user: req.user });
 });
 
 router.get('/leagues/:idL/teams/:idT/teamFixtures', reqParser.urlParser, reqAPI.requestAPI, reqMapper.mapperFixtures,
     function(req, res) {
 
-          res.render('leaguesView/fixtures', { title: 'Team fixtures', team: getTeam(req.params.idT), league: getLeague(req.params.idL), fixtures: req.models.fixtures });
+          res.render('leaguesView/fixtures', { title: 'Team fixtures', team: getTeam(req.params.idT),
+                league: getLeague(req.params.idL), fixtures: req.models.fixtures, user: req.user });
     });
 
 router.get('/leagues/:idL/fixtures', reqParser.urlParser, reqAPI.requestAPI, reqMapper.mapperFixtures,
 function(req, res) {
 
-      res.render('leaguesView/fixtures', { title: 'Fixtures info', league: getLeague(req.params.idL), fixtures: req.models.fixtures });
+      res.render('leaguesView/fixtures', { title: 'Fixtures info', league: getLeague(req.params.idL),
+            fixtures: req.models.fixtures, user: req.user });
 });
 
 router.get('/leagues/:idL/leagueTables', reqParser.urlParser, reqAPI.requestAPI, reqMapper.mapperLeagueTables,
 function(req, res) {
 
-      res.render('leaguesView/leagueTables', { title: 'Table info', league: getLeague(req.params.idL), leagueTables: req.models.leagueTables });
+      res.render('leaguesView/leagueTables', { title: 'Table info', league: getLeague(req.params.idL),
+            leagueTables: req.models.leagueTables, user: req.user });
 });
 
 //helper functions

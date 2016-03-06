@@ -1,11 +1,11 @@
 
 'use strict';
 
-const leagueObj = require('../../models/templates/leagueObj.json');
-const teamObj = require('../../models/templates/teamObj.json');
-const playerObj = require('../../models/templates/playerObj.json');
-const fixturesObj = require('../../models/templates/fixturesObj.json');
-const leagueTableObj = require('../../models/templates/leagueTableObj.json');
+const leagueObj = require('../../models/apiObj/leagueObj.json');
+const teamObj = require('../../models/apiObj/teamObj.json');
+const playerObj = require('../../models/apiObj/playerObj.json');
+const fixturesObj = require('../../models/apiObj/fixturesObj.json');
+const leagueTableObj = require('../../models/apiObj/leagueTableObj.json');
 
 function mapperLeagues(req, res, next) {
     req.models = req.models || {};

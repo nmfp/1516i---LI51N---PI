@@ -23,7 +23,7 @@ const db_url = "http://localhost:5984/"+db_name;
 
 //create database
 router.get('/pingdb', reqPingDB.checkDatabase, reqPingDB.createDatabase, reqPingDB.createView,
-    function(req, res) {  });
+    function(req, res) { res.end(); });
 
 router.post('/insertGroup',function(req, res, next) {
     let group = {
@@ -99,7 +99,7 @@ router.get('/all', reqDBParser.requestDBGroups,reqDBParser.requestNameGroup,
         req.models = req.models || {};
         groups = req.models.groupsName;
 
-        res.render('favoritesView/group', { groups: groups });
+        res.render('favoritesView/group', { groups: groups, user: req.user });
     });
 
 router.post('/changeT/:idL', reqFavorites.requestAPI, reqMapper.mapperTeams,
@@ -163,7 +163,8 @@ router.get('/:idGroup/teams', reqDBParser.teamsOfGroups, reqDBParser.reqTeamsGro
             control = true;
         }
 
-        res.render('favoritesView/favoritesTeams', { groupName: groupName, leagues:leagues, teams: teams, leaguesA: leaguesAll, control: control });
+        res.render('favoritesView/favoritesTeams', { groupName: groupName, leagues:leagues, teams: teams,
+            leaguesA: leaguesAll, control: control, user: req.user });
     });
 
 router.get('/nextFixtures', reqFavorites.requestAPIFixtures, reqMapper.mapperFixtures,
@@ -183,7 +184,7 @@ router.get('/nextFixtures', reqFavorites.requestAPIFixtures, reqMapper.mapperFix
 
     let filtered_dates = fixtures.filter(function(fixture) {
         let form_date = new Date(fixture["date"]);
-        if (to == 'up' && form_date > current_date && form_date < to_date)
+        if (to == 'up' && form_date >= current_date && form_date < to_date)
             return true;
         if (to == 'down' && form_date > to_date && form_date < current_date)
             return true;
@@ -194,12 +195,12 @@ router.get('/nextFixtures', reqFavorites.requestAPIFixtures, reqMapper.mapperFix
         if (l["id"] == req.query.idL)
             return l;
     });
-    res.render('leaguesView/fixtures', { fixtures: filtered_dates, league: league } );
+    res.render('leaguesView/fixtures', { fixtures: filtered_dates, league: league, user: req.user } );
 });
 
 router.get('/fixtures/:idL/:idT/:name/:groupName', function(req, res){
     res.render('favoritesView/queryFixtures',
-        { idL: req.params.idL, idT: req.params.idT, name: req.params.name, groupName: req.params.groupName } );
+        { idL: req.params.idL, idT: req.params.idT, name: req.params.name, groupName: req.params.groupName, user: req.user } );
 });
 
 router.post('/deleteTeam', reqDBParser.requestDB, reqDBParser.requestFavoritesName,

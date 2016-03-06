@@ -74,7 +74,6 @@ function requestAPILeagues(req, res, next) {
         });
 };
 
-
 module.exports = {
     requestAPI: requestAPIFavorites,
     requestAPIFixtures: requestAPIFixtures,

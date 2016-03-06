@@ -9,8 +9,6 @@
         <meta name="author" content="">
 
         <title>Football-data</title>
-<!-- -->
-
 
         <link href="/css/bootstrap.css" rel="stylesheet">
         <link href="/css/bootstrap.min.css" rel="stylesheet">
@@ -30,21 +28,44 @@
                         <span class="icon-bar"></span>
                     </button>
                     <a class="navbar-brand" href="/football-data/leagues">Football-data</a>
-                    <a class="navbar-brand" href="/favorites/all">Favorites</a>
+                    {{#if user}}
+                        <a class="navbar-brand" href="/favorites/all">Favorites</a>
+                    {{else}}
+                        <a class="navbar-brand" href="/user/register">Register</a>
+                    {{/if}}
+
                 </div>
 
-                <div id="navbar" class="navbar-collapse collapse">
-                    <form class="navbar-form navbar-right" action="/user/login">
+                <ul class="nav navbar-nav navbar-right">
+                    {{#if user}}
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="true">
+                                <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
+                                {{user}}
+                                <span class="caret"></span></a>
 
-                        <div class="form-group">
-                            <input type="text" placeholder="Email" class="form-control">
+                            <ul class="dropdown-menu">
+                                <li><a href="/favorites/all">Favorites</a></li>
+                                <li role="separator" class="divider"></li>
+                                <li><a href="/user/logout">Log out</a></li>
+                            </ul>
+                        </li>
+                    {{else}}
+                        <div id="navbar" class="navbar-collapse collapse">
+                            <form class="navbar-form navbar-right" action="/user/login" method="POST">
+
+                                <div class="form-group">
+                                    <input type="text" placeholder="User name" name="username" class="form-control" required>
+                                </div>
+                                <div class="form-group">
+                                    <input type="password" placeholder="Password" name="password" class="form-control" required>
+                                </div>
+                                <button type="submit" class="btn btn-success">Sign in</button>
+                            </form>
                         </div>
-                        <div class="form-group">
-                            <input type="password" placeholder="Password" class="form-control">
-                        </div>
-                        <button type="submit" class="btn btn-success">Sign in</button>
-                    </form>
-                </div><!--/.navbar-collapse -->
+                    {{/if}}
+                </ul>
+
             </div>
         </nav>
         <div class="container">
@@ -63,9 +84,8 @@
 
         </div>
 
-        <script src="/js/jquery-1.11.3.min.js"></script>
-        <script src="/js/bootstrap.js"></script>
-        <script src="/js/bootstrap.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+        <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
 
     </body>
 </html>

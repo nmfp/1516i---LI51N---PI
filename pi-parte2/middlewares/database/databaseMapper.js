@@ -1,7 +1,7 @@
 
 'use strict';
 
-const teamObj = require('../../models/templates/teamObj.json');
+const teamObj = require('../../models/apiObj/teamObj.json');
 
 function mapperTeamsFav(req, res, next) {
     req.models = req.models || {};

@@ -20,6 +20,11 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// authentication
+app.use(session({ resave: false, saveUninitialized: false, secret: 'mysuperbigsecret'}));
+app.use(passport.initialize());
+app.use(passport.session());
+
 //register the controllers
 const leagueController = require('./controllers/leaguesController');
 const favoritesController = require('./controllers/favoritesController');
@@ -41,12 +46,6 @@ app.use(function(req, res, next) {
   err.status = 404;
   next(err);
 });
-
-// authentication
-app.use(session({ resave: false, saveUninitialized: false, secret: 'mysuperbigsecret'}));
-app.use(passport.initialize());
-app.use(passport.session());
-
 
 // error handlers
 
