@@ -5,6 +5,10 @@ const request = require('request');
 
 const db_base_url = "http://localhost:5984/";
 
+//this module will be triggered with an ajax request to some specific end-point
+//the goal here is to validate the database, or create the database and the view
+//this view is important for a more detail query
+
 const end_point = {
     "user": "userlogin",
     "favorites": "footballdata"

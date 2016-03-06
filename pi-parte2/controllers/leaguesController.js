@@ -4,6 +4,7 @@
 const express = require('express');
 const router = express.Router();
 
+//helpers middlewares that will help application logic
 const reqAPI = require('../middlewares/api/ApiRequest');
 const reqParser = require('../middlewares/api/ApiUrlHandler');
 const reqMapper = require('../middlewares/api/ApiMapper');
@@ -13,7 +14,15 @@ const reqDBParser = require('../middlewares/database/databaseRequest');
 let leagues = [];
 let teams = [];
 
-//localhost:3000/football-data/leagues
+/*
+*
+* all this end points have a chain middleware
+* parsing the url
+* request the information from web api
+* map the information to server side
+*
+* */
+
 router.get('/leagues', reqParser.urlParser, reqAPI.requestAPI, reqMapper.mapperLeagues,
 function(req, res) {
       leagues = req.models.leagues;

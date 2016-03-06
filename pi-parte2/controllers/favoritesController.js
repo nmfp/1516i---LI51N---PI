@@ -15,6 +15,7 @@ const reqMapper = require('../middlewares/api/ApiMapper');
 const couchdb = require('node-couchdb');
 const request = require("request");
 
+// to cache information
 let groups = [];
 let teams = [];
 
@@ -30,6 +31,7 @@ router.post('/insertGroup',function(req, res, next) {
         "group": req.body.groupName,
         "teams": []
     };
+    //creation of a new document to be sent to the database
     request.post({
         url: db_url,
         body: group,
@@ -51,6 +53,7 @@ router.post('/insertTeam', reqDBParser.requestDB, reqDBParser.requestFavoritesNa
         };
         req.models = req.models || {};
 
+        //find the team which match the req.body.favoriteName
         let dbObjs = req.models.favoriteNames;
         let groupObj = dbObjs.find(function (dbo) {
             if (dbo["name"] == req.body.favoriteName)
@@ -65,6 +68,7 @@ router.post('/insertTeam', reqDBParser.requestDB, reqDBParser.requestFavoritesNa
             teams: groupObj["dbObj"]["teams"]
         };
 
+        //updating the document in the database
         couchdb.update(db_name, header, function(err, resData) {
             if (err)
                 return next(err);
@@ -73,6 +77,7 @@ router.post('/insertTeam', reqDBParser.requestDB, reqDBParser.requestFavoritesNa
         });
     });
 
+//delete a document from database
 router.post('/deleteGroup', reqDBParser.requestDB, reqDBParser.requestFavoritesName,
     function(req, res, next) {
         req.models = req.models || {};
@@ -86,6 +91,7 @@ router.post('/deleteGroup', reqDBParser.requestDB, reqDBParser.requestFavoritesN
         let id = groupObj["dbObj"]["_id"];
         let rev = groupObj["dbObj"]["_rev"];
 
+        //the id and revision is needed to delete a document with node-couchdb module
         couchdb.del(db_name, id, rev, function(err, resData) {
             if (err)
                 return next(err);
@@ -97,17 +103,20 @@ router.post('/deleteGroup', reqDBParser.requestDB, reqDBParser.requestFavoritesN
 router.get('/all', reqDBParser.requestDBGroups,reqDBParser.requestNameGroup,
     function(req, res) {
         req.models = req.models || {};
+        //getting all groups with middleware chain, result is saved in req.models.groupsName
         groups = req.models.groupsName;
 
         res.render('favoritesView/group', { groups: groups, user: req.user });
     });
 
+//ajax endpoint to send the teams to client side to be handled
 router.post('/changeT/:idL', reqFavorites.requestAPI, reqMapper.mapperTeams,
     function(req, res) {
 
         res.send(req.models.teams);
 });
 
+//ajax endpoint that sends a team to client side
 router.post('/addT/:groupN/:idL/:idT', reqDBParser.requestDB, reqDBParser.requestFavoritesName, reqFavorites.requestAPI, reqMapper.mapperTeams,
     function(req, res, next) {
         let favoriteTeam = {
@@ -129,6 +138,7 @@ router.post('/addT/:groupN/:idL/:idT', reqDBParser.requestDB, reqDBParser.reques
             teams: groupObj["dbObj"]["teams"]
         };
 
+        //the document is updated in the data base in the server side
         couchdb.update(db_name, header, function(err, resData) {
             if (err)
                 return next(err);
@@ -144,6 +154,7 @@ router.post('/addT/:groupN/:idL/:idT', reqDBParser.requestDB, reqDBParser.reques
         });
     });
 
+//getting all teams from a group
 router.get('/:idGroup/teams', reqDBParser.teamsOfGroups, reqDBParser.reqTeamsGroup, reqDBMapper.mapperTeamsFav,
     reqFavorites.requestAPI, reqMapper.mapperLeagues,
     function(req, res) {
@@ -167,6 +178,7 @@ router.get('/:idGroup/teams', reqDBParser.teamsOfGroups, reqDBParser.reqTeamsGro
             leaguesA: leaguesAll, control: control, user: req.user });
     });
 
+//query the last or previous fixtures from a team
 router.get('/nextFixtures', reqFavorites.requestAPIFixtures, reqMapper.mapperFixtures,
     reqFavorites.requestAPILeagues, reqMapper.mapperLeagues,  function(req, res){
 
@@ -182,6 +194,7 @@ router.get('/nextFixtures', reqFavorites.requestAPIFixtures, reqMapper.mapperFix
         to_date.setDate(current_date.getDate() - nDays);
     }
 
+    //filtering the fixtures based from the start date and end date
     let filtered_dates = fixtures.filter(function(fixture) {
         let form_date = new Date(fixture["date"]);
         if (to == 'up' && form_date >= current_date && form_date < to_date)
@@ -203,6 +216,7 @@ router.get('/fixtures/:idL/:idT/:name/:groupName', function(req, res){
         { idL: req.params.idL, idT: req.params.idT, name: req.params.name, groupName: req.params.groupName, user: req.user } );
 });
 
+// updating a group, by updating a team in the database
 router.post('/deleteTeam', reqDBParser.requestDB, reqDBParser.requestFavoritesName,
     function(req, res) {
 

@@ -1,24 +1,8 @@
 'use strict';
 
-/*
- http://api.football-data.org/v1/soccerseasons
-
- http://api.football-data.org/v1/soccerseasons/394/teams
- http://api.football-data.org/v1/teams/5/players
- http://api.football-data.org/v1/teams/5
-
- http://api.football-data.org/v1/soccerseasons/394/fixtures
- http://api.football-data.org/v1/soccerseasons/394/leagueTable
-
- football-data/leagues
- football-data/leagues/{idLeague}/teams
- football-data/leagues/{idLeague}/teams/{idTeam}/players
- football-data/leagues/{idLeague}/fixtures
- football-data/leagues/{idLeague}/leagueTable
- */
-
 const BASE_URL = "http://api.football-data.org/v1/";
 
+//javascript can work as a hashmap object, so this will be the strategy based with the endpoints to retrieve information
 const map = {
     "leagues": "soccerseasons",
     "teams": "soccerseasons/{idL}/teams",
@@ -27,6 +11,8 @@ const map = {
     "leagueTables": "soccerseasons/{idL}/leagueTable",
     "teamFixtures": "teams/{idT}/fixtures"
 };
+
+//this function will returns a valid url from the web api
 
 function urlParser(req, res, next) {
     req.models = req.models || {};

@@ -6,6 +6,8 @@ const API_KEY = {'X-Auth-Token': 'e5c32bfec9734a3b8e65cd7b1a18b702'};
 
 const base_url = "http://api.football-data.org/v1/soccerseasons";
 
+//this module is import to be more easy the retrieving information from the web api and handle it in the server side
+
 function requestAPIFavorites(req, res, next) {
     req.models = req.models || {};
 

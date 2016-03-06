@@ -7,6 +7,8 @@ const playerObj = require('../../models/apiObj/playerObj.json');
 const fixturesObj = require('../../models/apiObj/fixturesObj.json');
 const leagueTableObj = require('../../models/apiObj/leagueTableObj.json');
 
+//the json files required to this module, have the propertys that we want to retrieve from the web api
+
 function mapperLeagues(req, res, next) {
     req.models = req.models || {};
     let idx = 0;
@@ -121,7 +123,7 @@ function mapperLeagueTables(req, res, next) {
     return next();
 };
 
-
+//helper function
 function getIdParser(url) {
     return url.substring(url.lastIndexOf('/')+1, url.length).trim();
 }

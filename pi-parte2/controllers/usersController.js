@@ -12,7 +12,8 @@ const db_base_url = "http://localhost:5984/";
 const db_name = "userlogin";
 const db_url = db_base_url+db_name;
 
-passport.use(new LocalStrategy(function (username, password, done)  {
+//register middlewares that will create the property user in req object
+passport.use(new LocalStrategy(function (username, password, done) {
     userHandler.getOne(username, function (err, user) {
         if (err)
             done(err);
@@ -40,12 +41,6 @@ passport.deserializeUser(function(id, done) {
 
 module.exports = function(app) {
 
-    app.use(function(req, res, next) {
-        res.locals.user = req.user || {};
-        next();
-    });
-
-
     app.get('/user/login', function(req, res) {
         return res.redirect('/favorites/all');
     });
@@ -66,6 +61,7 @@ module.exports = function(app) {
         res.render('usersView/registerView', { user: req.user });
     });
 
+    //saving a new user in the database
     app.post('/user/register', function(req, res, next) {
         const userObj = {"user" :{
             "username": req.body.username,
@@ -82,9 +78,9 @@ module.exports = function(app) {
                 return next(err);
             return res.render('usersView/loginView', { user: req.user });
         });
-
     });
 
+    //ping the user document in the database
     app.get('/user/pingdb', reqPingDB.checkDatabase, reqPingDB.createDatabase, reqPingDB.createView,
     function(req, res) { res.end(); });
 

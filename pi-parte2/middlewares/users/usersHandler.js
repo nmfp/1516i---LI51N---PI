@@ -6,6 +6,8 @@ const couchdb = require('node-couchdb');
 const db_name = "userlogin";
 const viewName = "_design/usersview/_view/userv";
 
+//this module retuns a valid user registed in the web application
+
 function getOne(username, callback) {
     couchdb.get(db_name, viewName, null, function(err, resData) {
         if (err)
