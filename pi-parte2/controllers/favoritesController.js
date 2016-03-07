@@ -49,7 +49,8 @@ router.post('/insertTeam', reqDBParser.requestDB, reqDBParser.requestFavoritesNa
     function(req, res, next) {
         let favoriteTeam = {
             "idL": req.body.idL,
-            "idT": req.body.idT
+            "idT": req.body.idT,
+            "user": req.user
         };
         req.models = req.models || {};
 
@@ -104,9 +105,26 @@ router.get('/all', reqDBParser.requestDBGroups,reqDBParser.requestNameGroup,
     function(req, res) {
         req.models = req.models || {};
         //getting all groups with middleware chain, result is saved in req.models.groupsName
-        groups = req.models.groupsName;
+        let groupsAux = req.models.groupsName;
+        let user = req.user;
+        if (groupsAux != undefined) {
+            for (let i = 0; i < groupsAux.length; ++i) {
+                let arr = groupsAux[i]["teams"];
+                let aux = arr.filter(function (team) {
+                    if (team["user"] == user) {
+                        return team;
+                    }
+                });
+                if (aux.length > 0) {
+                    groupsAux[i]["teams"] = aux;
+                } else {
+                    groupsAux.splice(i,1);
+                }
+            }
+        }
+        groups = groupsAux;
 
-        res.render('favoritesView/group', { groups: groups, user: req.user });
+        res.render('favoritesView/group', { groups: groups, user: user });
     });
 
 //ajax endpoint to send the teams to client side to be handled
@@ -121,7 +139,8 @@ router.post('/addT/:groupN/:idL/:idT', reqDBParser.requestDB, reqDBParser.reques
     function(req, res, next) {
         let favoriteTeam = {
             "idL": req.params.idL,
-            "idT": req.params.idT
+            "idT": req.params.idT,
+            "user": req.user
         };
 
         let dbObjs = req.models.favoriteNames;
